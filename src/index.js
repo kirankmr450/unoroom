@@ -1,16 +1,17 @@
-console.log("hello world");
-
-//var express = require('express');
+var express = require('express');
 //var bodyParser = require('body-parser');
 //var path = require('path');
-//
-//var app = express();
+let guestRoute = require('./routes/guest');
+
+var app = express();
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({extended: false}));
-//app.get('/', function(req, res) {
-//   res.send('Hello World'); 
-//});
-//
+
+app.get('/', function(req, res) {
+   res.send('Hello World'); 
+});
+app.use(guestRoute);
+
 //// Catch 404 error
 //app.use(function(req, res, next) {
 //    var err = new Error('Not Found');
@@ -26,8 +27,6 @@ console.log("hello world");
 //    });
 //});
 //
-//app.listen(3000, function() {
-//    console.log('Example app listening on port 3000.');
-//});
-//
-//module.exports = app;
+
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => console.info(`Server listening on port ${PORT}.`));
