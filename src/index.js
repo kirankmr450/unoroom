@@ -1,32 +1,23 @@
 var express = require('express');
-//var bodyParser = require('body-parser');
-//var path = require('path');
+var bodyParser = require('body-parser');
+var path = require('path');
 let guestRoute = require('./routes/guest');
 
 var app = express();
-//app.use(bodyParser.json());
-//app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use('/guest', guestRoute);
 
-app.get('/', function(req, res) {
-   res.send('Hello World'); 
+// Catch 404 error
+app.use((req, res, next) => {
+    res.status(404).send('Resource not found');
 });
-app.use(guestRoute);
 
-//// Catch 404 error
-//app.use(function(req, res, next) {
-//    var err = new Error('Not Found');
-//    err.status = 404;
-//    next(err);
-//});
-//
-//app.use(function(err, req, res, next) {
-//    res.status(res.status || 500);
-//    res.render('error', {
-//        message: err.message,
-//        error: {}
-//    });
-//});
-//
+//Handle for error 500
+app.use((err, req, res, next) => {
+    console.log("PRINTING THIS ERRPR");
+    res.status(500).send('Error accessing the resource');
+});
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => console.info(`Server listening on port ${PORT}.`));
