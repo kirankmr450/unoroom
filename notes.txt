@@ -1,0 +1,22 @@
+Installing a module in node
+----------------------------
+- npm install <module_name>
+// The module gets installed in your project .bin folder. You cannot direct access the module from the command line though, however the module can be accessed within any scripts (including package.json).
+- npm install -g <module_name>
+// The module gets installed globally, and you can access the module binary from command line.
+- npm install --save-dev <module_name> 
+// The module gets intalled locally and dev dependencies is updated in package.json.
+
+
+UnoRooms
+--------------
+mongoose.connect('mongodb://${user}:${password}@${server}/${database}');
+Command Line:
+- Run app: npm run start-watch
+- Run Mongo Server: "C:\Program Files\MongoDB\Server\4.0\bin\mongod.exe" --dbpath "C:\Users\neeraj.nayan\Documents\Projects\Others\uno\mongodb"
+- Run Mongo command line: "C:\Program Files\MongoDB\Server\4.0\bin\mongo"
+
+
+
+
+
