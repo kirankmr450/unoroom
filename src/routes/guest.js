@@ -7,12 +7,12 @@ router.get('/', (req, res) => {
     return guestCtrl.list(req, res);
 });
 
-router.get('/:guestid', (req, res) => {
-    return guestCtrl.list(req, res);
-});
-
 router.post('/', (req, res) => {
     return guestCtrl.create(req, res);
+});
+
+router.get('/:guestid', (req, res) => {
+    return guestCtrl.list(req, res);
 });
 
 router.put('/:guestid', (req, res) => {

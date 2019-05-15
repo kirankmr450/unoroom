@@ -1,29 +1,19 @@
-var Facility = require('../model/facility.model');
-
-exports.listFacility = function(req, res) {
-    if (req.params.facilityid) {
-        Facility.find({"_id": req.params.facilityid})
-            .exec((err, results) => {
-                res.status(200).send(results); 
-            });
-    } else {
-        Facility.find().sort({ createdOn: 'desc'})
-            .limit(10)
-            .exec((err, results) => {
-                res.status(200).send(results); 
-        });
-    }
-}
-
+var FacilityModel = require('../model/facility.model');
 
 exports.createFacility = function(req, res) {
-    if (!req.body) {
-        return res.status(400).send('Request body is missing');
+    if (Object.keys(req.body).length === 0) {
+        return res.status(400)
+            .json({"error": "Request body is missing"});
     }
-    var facilityDoc = new Facility({
+    if (!req.body.name) {
+        return res.status(400)
+            .json({"error": "Mandatory field 'name' missing."})
+    }
+    var facilityDoc = new FacilityModel({
         name: req.body.name,
         phonenumber1: req.body.phonenumber1,
         phonenumber2: req.body.phonenumber2,
+        emailid: req.body.emailid,
         amenities: req.body.amenities,
         rules: req.body.rules,
         rooms: req.body.rooms,
@@ -33,90 +23,144 @@ exports.createFacility = function(req, res) {
     facilityDoc.save()
         .then(doc => {
             if (!doc || doc.length === 0) {
-                return res.status(201).send(doc);          
+                return res.status(500).json({"error": "Error creating guest."});
             }
-            return res.status(200).send(doc);
+            return res.status(201).send(doc);
     }).catch(err => {
+        // Handle scenario when certain parameter type is incorrect.
+        if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
         return res.status(500).json(err);
     });
 }
 
+
 exports.updateFacility = function(req, res) {
-    if (!req.params.facilityid) 
-        return res.status(400).send("Facility Id Missing");
-    
-    Facility.findOne({_id: req.params.id}, 
-                     (err, facility) => {
+    if (Object.keys(req.body).length === 0) {
+        return res.status(400)
+            .json({"error": "Request body is missing"});
+    }
+    // If 'name' is provided, it must not be empty string.
+    if (req.body.name !== undefined &&
+        !req.body.name) {
+        return res.status(400)
+            .json({"error": "Mandatory field 'name' cannot be empty."})
+    }
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
         
-        if (err || !facility) return res.status(404).send(err);
-        
-        Object.assign(facility, req.body);
-        facility.save()
-            .then(doc => {
-            if (!doc || doc.length === 0) {
-                return res.status(200).send(doc);
-            }
-            return res.status(200).send(doc);
+            Object.assign(facility, req.body);
+            return facility.save();
+        }).then(facility => {
+            return res.status(200).send(facility);
         }).catch(err => {
-           return res.status(500).json(err); 
+            console.log(err);
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send(err);
         });
-    });
+}
+
+
+exports.listFacility = function(req, res) {
+    if (req.params.facilityid) {
+        FacilityModel.findOne({_id: req.params.facilityid})
+            .lean()
+            .then(facility => {
+                if (!facility) return res.status(404).json({"error": "Facility does not exist."});
+            
+                return res.status(200).send(facility);
+            }).catch(err => {
+                if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+                return res.status(500).send({"error": "Server error"});
+            });
+    } else {
+        FacilityModel.find().sort({ createdOn: 'desc'})
+            .limit(10)
+            .lean()
+            .exec()
+            .then(facilities => {
+                res.status(200).send(facilities);
+            }).catch(err => {
+                return res.status(500).send({"error": "Server error"});
+            });
+    }
 }
 
 exports.deleteFacility = function(req, res) {
-    if (!req.params.facilityid) {
-        res.status(400).send("Missing URL parameter: userId");
-    } else {
-        Facility.findOneAndRemove({"_id": req.params.facilityid})
-        .then(doc => {
-            console.log(doc);
-            return res.status(200).send("");
-        })
-        .catch(err => {
-           return res.status(404).send("Item not found"); 
-        });
-    }
+    FacilityModel.findOneAndRemove({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
+
+                return res.status(200).send(facility);
+            }).catch(err => {
+               return res.status(500).send({"error": "Server error"}); 
+            });
 }
 
 exports.createRoom = function(req, res) {
-    if (!req.body) {
-        return res.status(400).send('Request body is missing');
+    if (Object.keys(req.body).length === 0) {
+        return res.status(400)
+            .json({"error": "Request body is missing"});
     }
     
-    Facility.findOne({_id: req.params.id}, 
-                     (err, facility) => {
-        if (err || !facility) return res.status(404).send(err);
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
         
-        facility.rooms.push(req.body);
-        facility.save()
-        .then(doc => {
-            if (!doc || doc.length === 0) {
-                return res.status(200).send(doc);
-            }
-            return res.status(200).send(doc);
+            facility.rooms.push(req.body);
+            return facility.save();
+        }).then(facility => {
+            return res.status(201).send(facility);
         }).catch(err => {
-           return res.status(500).json(err); 
+            console.log(err);
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send(err);
         });
-    });
 }
 
-
-
-
-exports.getRoomTypes = function(req, res) {
-    return res.status(200).send(JSON.stringify(roomTypes));
+exports.updateRoom = function(req, res) {
+    if (Object.keys(req.body).length === 0) {
+        return res.status(400)
+            .json({"error": "Request body is missing"});
+    }
+    // First, look up the facility
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
+        
+            for (roomIndex in facility.rooms) {
+                if (facility.rooms[roomIndex]._id == req.params.roomid) {
+                    Object.assign(facility.rooms[roomIndex], req.body);
+                    return facility.save();        
+                }
+            }
+            
+            return res.status(404).json({"error": "Room does not exist."});
+        }).then(facility => {
+            return res.status(200).send(facility);
+        }).catch(err => {
+            console.log(err);
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send(err);
+        });
 }
 
-exports.getBuildingAmenities = function(req, res) {
-    return res.status(200).send(JSON.stringify(buildingAmenities));
+exports.deleteRoom = function(req, res) {
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
+        
+            facility.rooms = facility.rooms.filter(room => room._id != req.params.roomid);
+            return facility.save();
+        }).then(facility => {
+            return res.status(200).send(facility);
+        }).catch(err => {
+            console.log(err);
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send(err);
+        });
 }
-
-exports.getRoomAmenities = function(req, res) {
-    return res.status(200).send(JSON.stringify(roomAmenities));
-}
-
-var roomTypes = ["SingleRoomApt", "DoubleRoomApt", "Villa", "ServiceApt", "Hotel"];
-
-var buildingAmenities = ["SwimmingPool", "Internet", "CarPark", "AirportTransfer", "Gym", "FrontDesk", "Spa", "Sauna", "Restaurant", "SmokingArea", "PetsAllowed", "Nightclub", "DisableFriendly", "BusinessFriendly"];
-
-var roomAmenities = ["AirConditioning", "NonSmoking", "Smoking", "Bathtub", "Kitchen", "PrivatePool", "TV", "Balcony", "Terrace", "CoffeeMaker", "Refrigerator", "WashingMachine", "Heating", "PetsAllowed", "SemiFurnished", "FullyFurnished"];

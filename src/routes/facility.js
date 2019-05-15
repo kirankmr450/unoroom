@@ -9,12 +9,12 @@ router.get('/', (req, res) => {
     return facilityCtrl.listFacility(req, res);
 });
 
-router.get('/:facilityid', (req, res) => {
-    return facilityCtrl.listFacility(req, res);
-});
-
 router.post('/', (req, res) => {
     return facilityCtrl.createFacility(req, res);
+});
+
+router.get('/:facilityid', (req, res) => {
+    return facilityCtrl.listFacility(req, res);
 });
 
 router.put('/:facilityid', (req, res) => {
@@ -38,21 +38,6 @@ router.delete('/:facilityid/:roomid', (req, res) => {
 
 router.put('/:facilityid/:roomid', (req, res) => {
     return facilityCtrl.updateRoom(req, res);
-});
-
-/**
- * META
- */
-router.get('/roomtypes', (req, res) => {
-   return facilityCtrl.getRoomTypes(req, res); 
-});
-
-router.get('/buildingamenities', (req, res) => {
-   return facilityCtrl.getBuildingAmenities(req, res); 
-});
-
-router.get('/roomamenities', (req, res) => {
-   return facilityCtrl.getRoomAmenities(req, res); 
 });
 
 module.exports = router;

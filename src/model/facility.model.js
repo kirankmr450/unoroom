@@ -73,6 +73,10 @@ var facilitySchema = new Schema({
         type: String,
         required: false
     },
+    emailid: {
+        type: String,
+        required: false
+    },
     amenities: {
         type: [String],
         required: false
