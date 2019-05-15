@@ -90,7 +90,8 @@ exports.list = function(req, res) {
                 return res.status(500).send({"error": "Server error"});
             });
     } else {
-        GuestModel.find().sort({ createdOn: 'desc'})
+        GuestModel.find(getFilter(req.query))
+            .sort({ createdOn: 'desc'})
             .limit(10)
             .lean()
             .exec()
@@ -102,11 +103,27 @@ exports.list = function(req, res) {
     }
 }
 
-function getFilter(req) {
+function getFilter(query) {
     var qsp = {};
-    if (req.query.name === 'name') {
-        
+    if (query.name) {
+        Object.assign(qsp, {$or: [{firstname: query.name}, {lastname: query.name}]});
     }
+    if(query.phonenumber) {
+        Object.assign(qsp, {$or: [{phonenumber1: query.phonenumber}, {phonenumber2: query.phonenumber}]});
+    }
+    if(query.passportid) {
+        Object.assign(qsp, {passportid: query.passportid});
+    }
+    if(query.emailid) {
+        Object.assign(qsp, {emailid: query.emailid});
+    }
+    return qsp;
+    
+    // Case insensitive search
+//    var string = "SomeStringToFind";
+//    var regex = new RegExp(["^", string, "$"].join(""), "i");
+//    // Creates a regex of: /^SomeStringToFind$/i
+//    db.stuff.find( { foo: regex } );
 }
 
 exports.delete = function(req, res) {

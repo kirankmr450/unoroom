@@ -15,4 +15,7 @@ router.get('/roomamenities', (req, res) => {
    return metaCtrl.getRoomAmenities(req, res); 
 });
 
+router.get('/locationtype', (req, res) => {
+    return metaCtrl.getLocationTypes(req, res);
+});
 module.exports = router;

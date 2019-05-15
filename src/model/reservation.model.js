@@ -18,8 +18,8 @@ var bookedroomSchema = new Schema({
 var reservationSchema = new Schema({
     guestid: Schema.Types.ObjectId,
     facilityid: Schema.Types.ObjectId,
-    checkin_date: Date,
-    checkout_date: Date,
+    checkindate: Date,
+    checkoutdate: Date,
     status: String,
     totalprice: Number,
     specialrequest: String,
