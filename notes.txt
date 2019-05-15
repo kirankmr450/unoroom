@@ -16,6 +16,14 @@ Command Line:
 - Run Mongo Server: "C:\Program Files\MongoDB\Server\4.0\bin\mongod.exe" --dbpath "C:\Users\neeraj.nayan\Documents\Projects\Others\uno\mongodb"
 - Run Mongo command line: "C:\Program Files\MongoDB\Server\4.0\bin\mongo"
 
+DB Model
+https://dba.stackexchange.com/questions/125162/database-design-of-room-booking-system-in-a-hotel
+https://stackoverflow.com/questions/10970777/mongodb-schema-for-hotel-booking-room-availability
+https://www.vertabelo.com/blog/technical-articles/designing-a-data-model-for-a-hotel-room-booking-system
+
+// Storing images in mongodb
+https://stackoverflow.com/questions/11442356/storing-some-small-under-1mb-files-with-mongodb-in-nodejs-without-gridfs
+
 
 
 
