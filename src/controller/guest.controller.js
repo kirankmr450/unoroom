@@ -60,17 +60,17 @@ exports.update = function(req, res) {
     }
     GuestModel.findOne({_id: req.params.guestid})
         .then(guest => {
-            if (!guest) return res.status(404).json({"error": "Guest does not exist."});
-        
+            if (!guest) throw { code: 404 };
             Object.assign(guest, req.body);
             return guest.save();
         }).then(guest => {
             return res.status(200).send(guest);
         }).catch(err => {
             console.log(err);
+            if (err.code === 404) return res.status(404).json({'error': 'Guest does not exist.'});
             // Email id is unique in the table. 
             // Handle duplicate email error message. 
-            if (err.code === 11000) return res.status(409).json({"error": "Duplicate email id."});
+            if (err.code === 11000) return res.status(409).json({'error': 'Duplicate email id.'});
             // Handle scenario when certain parameter type is incorrect.
             if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
             return res.status(500).send(err);
