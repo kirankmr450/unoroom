@@ -1,3 +1,4 @@
+var fs = require('fs');
 var FacilityModel = require('../model/facility.model');
 
 exports.createFacility = function(req, res) {
@@ -18,7 +19,8 @@ exports.createFacility = function(req, res) {
         rules: req.body.rules,
         rooms: req.body.rooms,
         roomtypes: req.body.roomtypes,
-        address: req.body.address
+        address: req.body.address,
+        img: new Buffer(req.body.img, 'base64')
     });
     facilityDoc.save()
         .then(doc => {
@@ -70,8 +72,7 @@ exports.listFacility = function(req, res) {
             .lean()
             .then(facility => {
                 if (!facility) return res.status(404).json({"error": "Facility does not exist."});
-            
-                return res.status(200).send(facility);
+                return res.status(200).send(facility); 
             }).catch(err => {
                 if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
                 return res.status(500).send({"error": "Server error"});
@@ -139,12 +140,13 @@ exports.updateRoom = function(req, res) {
                 }
             }
             
-            return res.status(404).json({"error": "Room does not exist."});
+            throw { code: 4041 };
         }).then(facility => {
             return res.status(200).send(facility);
         }).catch(err => {
             console.log(err);
             if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
+            if (err.code === 4041) return res.status(404).json({'error': 'Room does not exist.'});
     
             // Handle scenario when certain parameter type is incorrect.
             if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});

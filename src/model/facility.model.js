@@ -83,7 +83,7 @@ var facilitySchema = new Schema({
     },
     nearby: [nearybySchema],
     images: {
-        thumbnails: [String],
+        thumbnails: [Buffer],
         img: [imageSchema],
     },
     rules: [String],

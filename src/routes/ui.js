@@ -11,6 +11,10 @@ router.post('/dashboard/places', (req, res) => {
     return uiCtrl.addKeyPlace(req, res);
 });
 
+router.put('/dashboard/places/:placeid', (req, res) => {
+   return uiCtrl.updateKeyPlaces(req, res); 
+});
+
 router.delete('/dashboard/places/:placeid', (req, res) => {
     return uiCtrl.deleteKeyPlaces(req, res);
 });

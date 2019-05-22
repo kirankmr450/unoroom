@@ -8,13 +8,11 @@ exports.getKeyPlaces = function(req, res) {
         .lean()
         .exec()
         .then(response => {
-        console.log(response);
              if (!response ||
                  !response.keyplaces ||
                  !response.keyplaces.length === 0) {
                  return res.status(200).json([]);
              }
-        console.log(response);
              return res.status(200).json(response.keyplaces);
         }).catch(err => {
             return res.status(500).send({'error': 'Server error'}); 
@@ -31,7 +29,6 @@ exports.addKeyPlace = function(req, res) {
             .json({"error": "Mandatory field 'cityname' missing."})
     }
     UiModel.findOne()
-        .exec()
         .then(uiContentDocument => {
             if (!uiContentDocument) {
                 uiContentDocument = new UiModel({
@@ -49,9 +46,47 @@ exports.addKeyPlace = function(req, res) {
         });
 }
 
+exports.updateKeyPlaces = function(req, res) {
+    if (Object.keys(req.body).length === 0) {
+        return res.status(400)
+            .json({"error": "Request body is missing"});
+    }
+    // If 'cityname' is provided, it must not be empty string.
+    if (req.body.cityname !== undefined  &&
+        !req.body.cityname) {
+        return res.status(400)
+            .json({"error": "Mandatory field 'cityname' cannot be empty."})
+    }
+    UiModel.findOne()
+        .then(uiContentDocument => {
+            if (!uiContentDocument ||
+               !uiContentDocument.keyplaces ||
+               uiContentDocument.keyplaces.length === 0) {
+                throw { code: 404 };   
+            }
+        console.log(1);
+        console.log(uiContentDocument.keyplaces);
+            if (placeIndex in uiContentDocument.keyplaces) {
+                console.log(uiContentDocument.keyplaces[placeIndex]._id);
+                if (uiContentDocument.keyplaces[placeIndex]._id == req.params.placeid) {
+                    Object.assign(uiContentDocument.keyplaces[placeIndex], req.body);
+                    console.log(3);
+                    return uiContentDocument.save();
+                }
+            }
+console.log(2);
+            throw { code: 404 };
+        }).then(uiContentDocument => {
+            return res.status(200).send('Place removed.');
+        }).catch(err => {
+            if (err.code === 404) return res.status(404).send('Place does not exist.');
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).json(err);
+        });
+}
+
 exports.deleteKeyPlaces = function(req, res) {
     UiModel.findOne()
-        .exec()
         .then(uiContentDocument => {
             if (!uiContentDocument ||
                !uiContentDocument.keyplaces ||
@@ -98,7 +133,6 @@ exports.getFeaturedProperty = function(req, res) {
 
 exports.addFeaturedProperty = function(req, res) {
     UiModel.findOne()
-        .exec()
         .then(uiContentDocument => {
             if (!uiContentDocument) {
                 uiContentDocument = new UiModel({
@@ -119,7 +153,6 @@ exports.addFeaturedProperty = function(req, res) {
 
 exports.deleteFeaturedProperty = function(req, res) {
     UiModel.findOne()
-        .exec()
         .then(uiContentDocument => {
             if (!uiContentDocument || 
                 !uiContentDocument.featuredproperty ||

@@ -7,6 +7,16 @@ Installing a module in node
 - npm install --save-dev <module_name> 
 // The module gets intalled locally and dev dependencies is updated in package.json.
 
+UnoRoom Server
+--------------
+lumbini/lumbini
+577246186
+- MONGO-DB
+cd /d/uno/unoroom/mongodb/
+/c/Program\ Files/MongoDB/Server/4.0/bin/mongod.exe --dbpath .
+- HTTP Server
+
+
 
 UnoRooms
 --------------

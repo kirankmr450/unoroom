@@ -58,6 +58,7 @@ exports.update = function(req, res) {
         return res.status(400)
             .json({"error": "Mandatory field 'emailid' cannot be empty."})
     }
+    
     GuestModel.findOne({_id: req.params.guestid})
         .then(guest => {
             if (!guest) throw { code: 404 };
