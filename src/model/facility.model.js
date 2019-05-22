@@ -21,7 +21,7 @@ var imageSchema = new Schema({
 
 var roomSchema = new Schema({
     name: [String],
-    type: [String],
+    type: String,
     furnishing: String,
     size: String,
     view: String,

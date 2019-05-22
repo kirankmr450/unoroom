@@ -105,16 +105,25 @@ exports.list = function(req, res) {
 }
 
 function getFilter(query) {
+    // Individual QSP items and 'AND'ed
     var qsp = {};
+    // QSP: name
+    // Searches in both firstname and lastname field
     if (query.name) {
         Object.assign(qsp, {$or: [{firstname: query.name}, {lastname: query.name}]});
     }
+    //QSP: phonenumber
+    // Searches in both phonenumber1 and phonenumber2 field
     if(query.phonenumber) {
         Object.assign(qsp, {$or: [{phonenumber1: query.phonenumber}, {phonenumber2: query.phonenumber}]});
     }
+    //QSP: passportid
+    // Searches passportid
     if(query.passportid) {
         Object.assign(qsp, {passportid: query.passportid});
     }
+    // QSP: emailid
+    // Searches emailid
     if(query.emailid) {
         Object.assign(qsp, {emailid: query.emailid});
     }

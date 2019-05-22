@@ -15,7 +15,7 @@ lumbini/lumbini
 cd /d/uno/unoroom/mongodb/
 /c/Program\ Files/MongoDB/Server/4.0/bin/mongod.exe --dbpath .
 - HTTP Server
-
+npm run start-watch
 
 
 UnoRooms
