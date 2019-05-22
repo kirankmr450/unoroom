@@ -25,7 +25,7 @@ var guestSchema = new Schema({
         required: false
     },
     passportexpiry: {
-        type: String,
+        type: Date,
         required: false
     },
     nationality: {
