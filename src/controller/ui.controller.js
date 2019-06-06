@@ -64,17 +64,13 @@ exports.updateKeyPlaces = function(req, res) {
                uiContentDocument.keyplaces.length === 0) {
                 throw { code: 404 };   
             }
-        console.log(1);
-        console.log(uiContentDocument.keyplaces);
             if (placeIndex in uiContentDocument.keyplaces) {
                 console.log(uiContentDocument.keyplaces[placeIndex]._id);
                 if (uiContentDocument.keyplaces[placeIndex]._id == req.params.placeid) {
                     Object.assign(uiContentDocument.keyplaces[placeIndex], req.body);
-                    console.log(3);
                     return uiContentDocument.save();
                 }
             }
-console.log(2);
             throw { code: 404 };
         }).then(uiContentDocument => {
             return res.status(200).send('Place removed.');
@@ -107,8 +103,7 @@ exports.deleteKeyPlaces = function(req, res) {
 }
 
 exports.getFeaturedProperty = function(req, res) {
-    UiModel.findOne({}, 'featuredProperty')
-        .lean()
+    UiModel.findOne({}, 'featuredproperty')
         .exec()
         .then(response => {
             // If no featured property, return empty array.
@@ -123,8 +118,8 @@ exports.getFeaturedProperty = function(req, res) {
                 .sort({createdOn: 'desc'})
                 .lean()
                 .exec();
-        }).then(facilites => {
-            return res.status(200).send(facilites);
+        }).then(facilities => {
+            return res.status(200).send(facilities);
         }).catch(err => {
             if (err.code === 200) return res.status(200).json([]);
             return res.status(500).send({"error": "Server error"});

@@ -98,6 +98,10 @@ var facilitySchema = new Schema({
             type: String, 
             required: false
         },
+        locality: {
+            type: String,
+            required: false
+        },
         city: {
             type: String,
             required: false

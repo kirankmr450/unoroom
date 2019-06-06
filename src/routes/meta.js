@@ -18,4 +18,16 @@ router.get('/roomamenities', (req, res) => {
 router.get('/locationtype', (req, res) => {
     return metaCtrl.getLocationTypes(req, res);
 });
+
+router.get('/cities', (req, res) => {
+   return metaCtrl.getCities(req, res); 
+});
+
+router.get('/localities', (req, res) => {
+    return metaCtrl.getLocalities(req, res);
+});
+
+router.get('/countries', (req, res) => {
+    return metaCtrl.getCountries(req, res); 
+});
 module.exports = router;

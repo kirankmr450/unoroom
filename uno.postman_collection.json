@@ -1,0 +1,1119 @@
+{
+	"info": {
+		"_postman_id": "c06188a9-623e-4273-b5d2-ed5e83dceae9",
+		"name": "uno",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Guest",
+			"item": [
+				{
+					"name": "Create Guest",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstname\": \"Neeraj\",\n    \"lastname\": \"Nayan\",\n    \"passportid\": \"A290384\",\n    \"passportexpiry\": \"2010-01-01T00:00+05:30\",\n    \"nationality\": \"indian\",\n    \"emailid\": \"neeraj.nayan@gmail.com\",\n    \"phonenumber1\": \"345365463435\",\n    \"phonenumber2\": \"95675534542\",\n    \"address\": {\n    \t\"line1\": \"Shilpitha Splendour\",\n    \t\"line2\": \"Mahadevapura\",\n    \t\"city\": \"bangalore\",\n    \t\"pin\": \"560067\",\n    \t\"country\": \"india\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/guest",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"guest"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update guest",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"lastname\": \"Neeraj\",\n\t\"phonenumber2\": \"9567553454\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/guest/5cdba25be3f619150cd76bea",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"guest",
+								"5cdba25be3f619150cd76bea"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Guest List",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstname\": \"Neeraj\",\n    \"lastname\": \"Nayan\",\n    \"passportid\": \"A290384\",\n    \"passportexpiry\": \"expiry date\",\n    \"nationality\": \"Indian\",\n    \"emailid\": \"a@b.c\",\n    \"phonenumber1\": \"345365463435\",\n    \"phonenumber2\": \"95675534542\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/guest?emailid=a@bbb.com",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"guest"
+							],
+							"query": [
+								{
+									"key": "emailid",
+									"value": "a@bbb.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Guest",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3000/guest/5cdb9d543ff0cd5578fbbea7",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"guest",
+								"5cdb9d543ff0cd5578fbbea7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Guest",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3000/guest/5ccc278cf7887e6604135089",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"guest",
+								"5ccc278cf7887e6604135089"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Occupancy",
+			"item": [
+				{
+					"name": "Create Occupied Room",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reservationid\": \"4edd40c86762e0fb12000499\",\n    \"roomid\": \"4edd40c86762e0fb12000109\",\n    \"guestid\": \"4edd40c86762e0fb12000209\",\n    \"checkindate\": \"2010-01-01T05:06+05:09\",\n    \"checkoutdate\": \"2010-01-01T12:06-05:09\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/occupiedroom",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"occupiedroom"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Occupancy",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstname\": \"Neeraj\",\n    \"lastname\": \"Nayan\",\n    \"passportid\": \"A290384\",\n    \"passportexpiry\": \"expiry date\",\n    \"nationality\": \"Indian\",\n    \"emailid\": \"a@b.c\",\n    \"phonenumber1\": \"345365463435\",\n    \"phonenumber2\": \"95675534542\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/occupiedroom",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"occupiedroom"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Occupancy",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3000/occupiedroom/5cd9055c02d7718b78f47d5d",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"occupiedroom",
+								"5cd9055c02d7718b78f47d5d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Facility",
+			"item": [
+				{
+					"name": "Create Facility",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Brigade Metropolis\",\n    \"phonenumber1\": \"345365463435\",\n    \"phonenumber2\": \"95675534542\",\n    \"emailid\": \"abc@gmail.com\",\n    \"amenities\": [\"SwimmingPool\", \"Spa\"],\n    \"rules\": [\"Rule-1\", \"Rule-2\"],\n    \"address\": {\n    \t\"line1\": \"Address Line 1\",\n    \t\"line2\": \"Address Line 2\",\n    \t\"locality\": \"Whitefield\",\n    \t\"city\": \"Bangalore\",\n    \t\"pin\": \"560066\",\n    \t\"country\": \"India\",\n    \t\"location\": {\n    \t\t\"latitude\": 12.9829735,\n    \t\t\"longitude\": 77.687969\n    \t}\n    },\n    \"nearby\": [{\n    \t\"name\": \"Taj\",\n    \t\"locationtype\": \"BusStand\",\n    \t\"location\": {\n    \t\t\"latitude\": 12.9829735,\n    \t\t\"longitude\": 77.687969\n    \t},\n    \t\"distanceinmeters\": 2324\n    }]\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/facility",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"facility"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Facility List",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Facility",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"address\": {\n        \"city\": \"bangalore\",\n        \"locality\": \"whitefield\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/5ce4dedd5ba8ed4ef4682683",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"5ce4dedd5ba8ed4ef4682683"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Facility",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/5cf7c9c555c6212b04164e66",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"5cf7c9c555c6212b04164e66"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Facility",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3000/facility/5cda8a52734a719378fc6b3d",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"facility",
+								"5cda8a52734a719378fc6b3d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Cities",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/cities",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"cities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Localities",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/localities",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"localities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Nearby",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Soul Space\",\n\t\"locationtype\": \"ShoppingMall\",\n\t\"location\": {\n\t\t\"latitude\": 12.9829735,\n\t\t\"longitude\": 77.687969\n\t},\n\t\"distanceinmeters\": 2324\n}"
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/nearby/5cf7c9c555c6212b04164e66",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"nearby",
+								"5cf7c9c555c6212b04164e66"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Nearby",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/nearby/5cf7c9c555c6212b04164e66/5cf7c9c555c6212b04164e67",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"nearby",
+								"5cf7c9c555c6212b04164e66",
+								"5cf7c9c555c6212b04164e67"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Nearby",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Taj\",\n\t\"locationtype\": \"Park\",\n\t\"location\": {\n\t\t\"latitude\": 12.9829735,\n\t\t\"longitude\": 77.687969\n\t},\n\t\"distanceinmeters\": 2324\n}"
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/nearby/5cf7c9c555c6212b04164e66/5cf8940a5004755cbc6e637e",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"nearby",
+								"5cf7c9c555c6212b04164e66",
+								"5cf8940a5004755cbc6e637e"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b77c7628-c82d-47e0-a313-92e54a3217c4",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "10d55262-8c3f-4a0d-8cd5-98708dd3e1e9",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Room",
+			"item": [
+				{
+					"name": "Create Room",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Pool side room\",\n    \"type\": \"SingleRoomApt\",\n    \"amenities\": [\"PrivatePool\"],\n    \"size\": \"12 SqM\",\n    \"view\": \"\",\n    \"price\": \"2400\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/facility/room/5ce37e3c84e2b2ad2cab01be",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"facility",
+								"room",
+								"5ce37e3c84e2b2ad2cab01be"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Room",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3000/facility/room/5cdbe0c480e18304307ee75f/5cdbe77f7e9a9b41f03580e1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"facility",
+								"room",
+								"5cdbe0c480e18304307ee75f",
+								"5cdbe77f7e9a9b41f03580e1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Room",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"price\": \"3000\",\n\t\"size\": \"20 SqM\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/facility/room/5cdbe0c480e18304307ee75f/5cdbe77f7e9a9b41f03580e1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"facility",
+								"room",
+								"5cdbe0c480e18304307ee75f",
+								"5cdbe77f7e9a9b41f03580e1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "meta",
+			"item": [
+				{
+					"name": "Get Room Types",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/meta/roomtypes",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"meta",
+								"roomtypes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Location Types",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/meta/locationtype",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"meta",
+								"locationtype"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Room Amenities",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/meta/roomamenities",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"meta",
+								"roomamenities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Building Amenities",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/meta/buildingamenities",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"meta",
+								"buildingamenities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Cities",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/meta/cities",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"meta",
+								"cities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Localities",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/meta/localities?city=Bangalore",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"meta",
+								"localities"
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "Bangalore"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Countries",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/meta/countries",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"meta",
+								"countries"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ui",
+			"item": [
+				{
+					"name": "Get Featured Property",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/ui/dashboard/featuredproperty",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"ui",
+								"dashboard",
+								"featuredproperty"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Feartured Property",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/ui/dashboard/featuredproperty/5cf6765b98890f1c30a12175",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"ui",
+								"dashboard",
+								"featuredproperty",
+								"5cf6765b98890f1c30a12175"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Featured Property",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3000/ui/dashboard/featuredproperty/5cdd1839e17be2805cccfc35",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"ui",
+								"dashboard",
+								"featuredproperty",
+								"5cdd1839e17be2805cccfc35"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Key Places",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/ui/dashboard/places",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"ui",
+								"dashboard",
+								"places"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Key Place",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"cityname\": \"bangalore\",\n   \"placename\": \"Marathalli\",\n   \"location\": {\n\t\t\"latitude\": 342945234234,\n\t\t\"longitude\": 34039452342\n\t},\n\t\"images\": []\n}"
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/ui/dashboard/places",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"ui",
+								"dashboard",
+								"places"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Key Place",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3000/ui/dashboard/places/id",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"ui",
+								"dashboard",
+								"places",
+								"id"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Key Places",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"cityname\": \"bangalore\",\n   \"placename\": \"Marathalli\",\n   \"location\": {\n\t\t\"latitude\": 342945234234,\n\t\t\"longitude\": 34039452342\n\t},\n\t\"images\": []\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/ui/dashboard/places",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"ui",
+								"dashboard",
+								"places"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
