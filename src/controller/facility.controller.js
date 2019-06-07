@@ -147,6 +147,30 @@ exports.deleteFacility = function(req, res) {
             });
 }
 
+exports.checkIfRoomExist = function(facilityId, bookedRooms) {
+    return new Promise((resolve, reject) => {
+        FacilityModel.findOne({_id: facilityId})
+        .then(facility => {
+            if (!facility) 
+                reject({error: 'Facility does not exist.'});
+            
+            for (roomIndex in bookedRooms) {
+                // Check if the required room type exist
+                var room = facility.rooms.find(room => room.type === bookedRooms[roomIndex].type);
+                if (!room) reject({error: 'Room type ' + bookedRooms[roomIndex].type + ' does not exist.'});
+                
+                if (room.count < bookedRooms[roomIndex].count)
+                    reject({error: 'Room count exceeds availablity.'});
+            }
+            resolve(true);
+        }).catch(err => {
+            if (err.name == 'CastError') reject({error: 'Cast error.'});
+            reject({error: 'Internal server error'});
+        });
+    });
+}
+
+
 exports.createRoom = function(req, res) {
     if (Object.keys(req.body).length === 0) {
         return res.status(400)
@@ -159,7 +183,7 @@ exports.createRoom = function(req, res) {
         .json({'error': 'Invalid amenities in the amenity list'});
     }
     // Ensure room type belong to meta.model.roomTypes
-    if (isInvalidRoomType(req.body.type)) {
+    if (MetaModel.isInvalidRoomType(req.body.type)) {
         return res.status(400).json({'error': 'Invalid room type'});
     }
     FacilityModel.findOne({_id: req.params.facilityid})
@@ -190,7 +214,7 @@ exports.updateRoom = function(req, res) {
         .json({'error': 'Invalid amenities in the amenity list'});
     }
     // If room type is provided, ensure room type belong to meta.model.roomTypes
-    if (req.body.type !== undefined && isInvalidRoomType(req.body.type)) {
+    if (req.body.type !== undefined && MetaModel.isInvalidRoomType(req.body.type)) {
         return res.status(400).json({'error': 'Invalid room type'});
     }
     // First, look up the facility
@@ -223,10 +247,6 @@ var isInvalidRoomAmenities = (amenities) => {
     var diff = _.difference(amenities, MetaModel.roomAmenities);
     if (diff.length > 0) return true;
     return false;
-}
-
-var isInvalidRoomType = (roomType) => {
-    return ((MetaModel.roomTypes.indexOf(roomType)) === -1);
 }
 
 /**

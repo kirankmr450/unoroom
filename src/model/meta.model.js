@@ -1,4 +1,12 @@
-exports.roomTypes = ["SingleRoomApt", "DoubleRoomApt", "Villa", "ServiceApt", "Hotel"];
+/**
+ * Room Type
+ */
+var roomTypes = ["SingleBedRoom", "DoubleBedRoom", "OneBHKApartment", "TwoBHKApartment", "ThreeBHKApartment"];
+
+exports.roomTypes = roomTypes;
+exports.isInvalidRoomType = (roomType) => {
+    return ((roomTypes.indexOf(roomType)) === -1);
+}
 
 exports.buildingAmenities = ["SwimmingPool", "Internet", "CarPark", "AirportTransfer", "Gym", "FrontDesk", "Spa", "Sauna", "Restaurant", "SmokingArea", "PetsAllowed", "Nightclub", "DisableFriendly", "BusinessFriendly"];
 

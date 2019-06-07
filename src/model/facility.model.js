@@ -27,6 +27,7 @@ var roomSchema = new Schema({
     view: String,
     amenities: [String],
     price: Number,
+    count: Number,
     images: {
         thumbnails: [String],
         img: [imageSchema]
@@ -63,6 +64,10 @@ var facilitySchema = new Schema({
         type: String, 
         required: true,
         validate: requiredStringValidator
+    },
+    description: {
+        type: String,
+        required: false
     },
     phonenumber1: {
         type: String,

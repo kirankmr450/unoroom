@@ -1,3 +1,4 @@
+var mongoose = require('mongoose');
 var GuestModel = require('../model/guest.model')
 
 exports.create = function(req, res) {
@@ -145,4 +146,18 @@ exports.delete = function(req, res) {
         }).catch(err => {
            return res.status(500).send({"error": "Server error"}); 
         });
+}
+
+exports.checkIfGuestExist = function(guestId) {
+    return new Promise((resolve, reject) => {
+        GuestModel.findOne(
+            {_id: mongoose.Types.ObjectId(guestId)}, '_id')
+        .then(guestId => {
+            if (!guestId) return reject({error: 'Guest does not exist.'});
+            return resolve(true); 
+        }).catch(err => {
+            if (err.name == 'CastError') return reject({error: 'Cast Error.'});
+            return reject({error: 'Internal Server Error.'});
+        });
+    });
 }

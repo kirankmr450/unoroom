@@ -8,6 +8,8 @@ let facilityRoute = require('./routes/facility');
 let occupiedRoomRoute = require('./routes/occupiedroom');
 let metaRoute = require('./routes/meta');
 let uiRoute = require('./routes/ui');
+let utilsRoute = require('./routes/utils');
+let reservationRoute = require('./routes/reservation');
 
 mongoose.connect('mongodb://localhost:27017/unorooms', {useNewUrlParser: true});
 
@@ -19,6 +21,9 @@ app.use('/facility', facilityRoute);
 app.use('/occupiedroom', occupiedRoomRoute);
 app.use('/meta', metaRoute);
 app.use('/ui', uiRoute);
+app.use('/utils', utilsRoute);
+app.use('/reservation', reservationRoute);
+
 
 
 // Catch 404 error
