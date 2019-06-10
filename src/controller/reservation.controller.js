@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var moment = require('moment');
+var moment = require('moment-timezone');
 var ReservationModel = require('../model/reservation.model')
 var FacilityCtrl = require('../controller/facility.controller')
 var GuestCtrl = require('../controller/guest.controller')
@@ -31,19 +31,26 @@ exports.create = function(req, res) {
         .then(() => FacilityCtrl.checkIfRoomExist(req.body.facilityid, req.body.rooms))
         .catch(err => { throw err; })
         .then(isRoomsExist => {
-            console.log(isRoomsExist);
+            
+            // Check-in/out Date should only be date and not the time
+            // Accepted format is "2019-11-18".
+//            console.log('Received: ' + req.body.checkindate + ' ' + req.body.checkoutdate);
+            var checkin = moment.tz(req.body.checkindate + ' 12:00', 'Asia/Calcutta');
+            var checkout = moment.tz(req.body.checkoutdate + ' 11:59:59.999', 'Asia/Calcutta');
         
-            var checkindate = moment(req.body.checkindate, moment.ISO_8601).toDate();
-            var checkoutdate = moment(req.body.checkoutdate, moment.ISO_8601).toDate();
+//            console.log('Transformed: ' + checkin.format() + ' ' + checkout.format());
+//            console.log('Transformed-Date: ' + checkin.toDate() + ' ' + checkout.toDate());
+        
             var reservationDocument = new ReservationModel({
                 guestid: mongoose.Types.ObjectId(req.body.guestid),
                 facilityid: mongoose.Types.ObjectId(req.body.facilityid),
-                checkindate: checkindate,
-                checkoutdate: checkoutdate,
+                checkindate: checkin.toDate(),
+                checkoutdate: checkout.toDate(),
                 status: req.body.status,
                 totalprice: req.body.totalprice,
                 specialrequest: req.body.specialrequest,
-                payment: req.body.payment
+                payment: req.body.payment,
+                rooms: req.body.rooms
             });
             return reservationDocument.save();
         }).then(reservation => {
@@ -74,12 +81,13 @@ exports.list = (req, res) => {
     } else {
         ReservationModel.find(getFilter(req.query))
             .sort({ createdOn: 'desc'})
-            .limit(10)
+            .limit(20)
             .lean()
             .exec()
             .then(reservations => {
                 res.status(200).send(reservations);
             }).catch(err => {
+            console.log(err);
                 return res.status(500).send({"error": "Server error"});
             });
     }
@@ -93,8 +101,33 @@ function getFilter(query) {
     if(query.facilityid) {
         Object.assign(qsp, {facilityid: query.facilityid});
     }
+    if (query.checkindate && query.checkoutdate) {
+        var checkin = moment.tz(query.checkindate + ' 12:00', 'Asia/Calcutta');
+        var checkout = moment.tz(query.checkoutdate + ' 12:00', 'Asia/Calcutta');
+        
+        Object.assign(qsp, {$or: [
+            {checkindate: {'$lte': checkin}, checkoutdate: {'$gt': checkin}},
+            {checkindate: {'$lt': checkout}, checkoutdate: {'$gte': checkout}},
+            {checkindate: {'$gt': checkin}, checkoutdate: {'$lt': checkout}}
+        ]});
+    }
     return qsp;
 }
+
+
+exports.update = function(req, res) {
+//    if (Object.keys(req.body).length === 0) {
+//        return res.status(400)
+//            .json({"error": "Request body is missing"});
+//    }
+//    // GuestId cannot be changed.
+//    if (req.body.guestid !== undefined) {
+//        return res.status(400)
+//            .json({"error": "Guest Id cannot be changed"});
+//    }
+    req.status(404).send('This API is not yet supported');
+}
+
 
 exports.delete = (req, res) => {
     ReservationModel

@@ -105,7 +105,8 @@ exports.listFacility = function(req, res) {
             .then(facilities => {
                 res.status(200).send(facilities);
             }).catch(err => {
-                return res.status(500).send({"error": "Server error"});
+            // {"error": "Server error"}
+                return res.status(500).send(err);
             });
     }
 }
@@ -114,12 +115,12 @@ var getFacilityFilter = (query) => {
     // Individual QSP fields are 'AND'ed
     var qsp = {};
     // QSP: city=<comma-separated-cities> (bangalore,ahmedabad)
-    // Each city name is 'OR'ed.
-    // i.e. Returns facilities in any of those cities.
-    if (query.city) {
+    // Each city name is 'OR'ed. i.e. Returns facilities in any of those cities.
+    // 'city' param should be provided only once.
+    if (query.city && typeof query.city === 'string') {
         Object.assign(qsp, {'address.city': {$in: query.city.split(',')}});
     }
-    //QSP: amenities=<amenity-name>
+    //QSP: amenities=<building-amenities>
     //One can specify multiple amenities field in QSP
     //Returns facility which has all the amenities specified.
     if (query.amenities) {
@@ -132,6 +133,18 @@ var getFacilityFilter = (query) => {
     //Returns all amenities which has at-least one room of this type
     if (query.roomtype) {
         Object.assign(qsp, {'rooms.type': query.roomtype});
+    }
+    //QSP: ramenities=<room-amenities>
+    //One can specify multiple amenities field in QSP
+    //Returns facility which has rooms with all of these amenities.
+    if (query.ramenities) {
+        if (typeof query.ramenities === 'string') {
+            query.ramenities = [query.ramenities];
+        }
+        // $elemMatch enables searching individual room independently.
+        // Without it, room amenities are search at facility level, if a facility
+        // contains all the room amenities across its room, they are also returned.
+        Object.assign(qsp, {'rooms': {$elemMatch: {'amenities': {$all: query.ramenities}}}});
     }
     return qsp;
 }

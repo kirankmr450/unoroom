@@ -5,11 +5,13 @@ exports.getRoomTypes = function(req, res) {
 }
 
 exports.getBuildingAmenities = function(req, res) {
-    return res.status(200).json(MetaModel.buildingAmenities);
+    return res.status(200).json(
+        MetaModel.buildingAmenities.concat(MetaModel.roomAmenities).sort());
 }
 
 exports.getRoomAmenities = function(req, res) {
-    return res.status(200).json(MetaModel.roomAmenities);
+//    return res.status(200).json(MetaModel.roomAmenities);
+    return res.status(404).json('This API is no longer supported. Use building amenities API.');
 }
 
 exports.getLocationTypes = function(req, res) {
