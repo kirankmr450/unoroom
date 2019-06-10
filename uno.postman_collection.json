@@ -24,19 +24,12 @@
 							"raw": "{\n\t\"firstname\": \"Neeraj\",\n    \"lastname\": \"Nayan\",\n    \"passportid\": \"A290384\",\n    \"passportexpiry\": \"2010-01-01T00:00+05:30\",\n    \"nationality\": \"indian\",\n    \"emailid\": \"neeraj.nayan@gmail.com\",\n    \"phonenumber1\": \"345365463435\",\n    \"phonenumber2\": \"95675534542\",\n    \"address\": {\n    \t\"line1\": \"Shilpitha Splendour\",\n    \t\"line2\": \"Mahadevapura\",\n    \t\"city\": \"bangalore\",\n    \t\"pin\": \"560067\",\n    \t\"country\": \"india\"\n    }\n}"
 						},
 						"url": {
-							"raw": "localhost:3000/guest",
+							"raw": "{{DEV_SERVER}}/guest",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"guest"
-							],
-							"query": [
-								{
-									"key": "",
-									"value": ""
-								}
 							]
 						}
 					},
@@ -58,11 +51,10 @@
 							"raw": "{\n\t\"lastname\": \"Neeraj\",\n\t\"phonenumber2\": \"9567553454\"\n}"
 						},
 						"url": {
-							"raw": "localhost:3000/guest/5cdba25be3f619150cd76bea",
+							"raw": "{{DEV_SERVER}}/guest/5cdba25be3f619150cd76bea",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"guest",
 								"5cdba25be3f619150cd76bea"
@@ -90,11 +82,10 @@
 							"raw": "{\n\t\"firstname\": \"Neeraj\",\n    \"lastname\": \"Nayan\",\n    \"passportid\": \"A290384\",\n    \"passportexpiry\": \"expiry date\",\n    \"nationality\": \"Indian\",\n    \"emailid\": \"a@b.c\",\n    \"phonenumber1\": \"345365463435\",\n    \"phonenumber2\": \"95675534542\"\n}"
 						},
 						"url": {
-							"raw": "localhost:3000/guest?emailid=a@bbb.com",
+							"raw": "{{DEV_SERVER}}/guest?emailid=a@bbb.com",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"guest"
 							],
@@ -127,11 +118,10 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3000/guest/5cdb9d543ff0cd5578fbbea7",
+							"raw": "{{DEV_SERVER}}/guest/5cdb9d543ff0cd5578fbbea7",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"guest",
 								"5cdb9d543ff0cd5578fbbea7"
@@ -156,11 +146,10 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3000/guest/5ccc278cf7887e6604135089",
+							"raw": "{{DEV_SERVER}}/guest/5ccc278cf7887e6604135089",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"guest",
 								"5ccc278cf7887e6604135089"
@@ -190,11 +179,10 @@
 							"raw": "{\n\t\"reservationid\": \"4edd40c86762e0fb12000499\",\n    \"roomid\": \"4edd40c86762e0fb12000109\",\n    \"guestid\": \"4edd40c86762e0fb12000209\",\n    \"checkindate\": \"2010-01-01T05:06+05:09\",\n    \"checkoutdate\": \"2010-01-01T12:06-05:09\"\n}"
 						},
 						"url": {
-							"raw": "localhost:3000/occupiedroom",
+							"raw": "{{DEV_SERVER}}/occupiedroom",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"occupiedroom"
 							]
@@ -221,11 +209,10 @@
 							"raw": "{\n\t\"firstname\": \"Neeraj\",\n    \"lastname\": \"Nayan\",\n    \"passportid\": \"A290384\",\n    \"passportexpiry\": \"expiry date\",\n    \"nationality\": \"Indian\",\n    \"emailid\": \"a@b.c\",\n    \"phonenumber1\": \"345365463435\",\n    \"phonenumber2\": \"95675534542\"\n}"
 						},
 						"url": {
-							"raw": "localhost:3000/occupiedroom",
+							"raw": "{{DEV_SERVER}}/occupiedroom",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"occupiedroom"
 							]
@@ -249,11 +236,10 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3000/occupiedroom/5cd9055c02d7718b78f47d5d",
+							"raw": "{{DEV_SERVER}}/occupiedroom/5cd9055c02d7718b78f47d5d",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"occupiedroom",
 								"5cd9055c02d7718b78f47d5d"
@@ -283,11 +269,10 @@
 							"raw": "{\n\t\"name\": \"Brigade Metropolis\",\n    \"phonenumber1\": \"345365463435\",\n    \"phonenumber2\": \"95675534542\",\n    \"emailid\": \"abc@gmail.com\",\n    \"amenities\": [\"SwimmingPool\", \"Spa\"],\n    \"rules\": [\"Rule-1\", \"Rule-2\"],\n    \"address\": {\n    \t\"line1\": \"Address Line 1\",\n    \t\"line2\": \"Address Line 2\",\n    \t\"locality\": \"Whitefield\",\n    \t\"city\": \"Bangalore\",\n    \t\"pin\": \"560066\",\n    \t\"country\": \"India\",\n    \t\"location\": {\n    \t\t\"latitude\": 12.9829735,\n    \t\t\"longitude\": 77.687969\n    \t}\n    },\n    \"nearby\": [{\n    \t\"name\": \"Taj\",\n    \t\"locationtype\": \"BusStand\",\n    \t\"location\": {\n    \t\t\"latitude\": 12.9829735,\n    \t\t\"longitude\": 77.687969\n    \t},\n    \t\"distanceinmeters\": 2324\n    }]\n}"
 						},
 						"url": {
-							"raw": "localhost:3000/facility",
+							"raw": "{{DEV_SERVER}}/facility",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"facility"
 							]
@@ -400,11 +385,10 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3000/facility/5cda8a52734a719378fc6b3d",
+							"raw": "{{DEV_SERVER}}/facility/5cda8a52734a719378fc6b3d",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"facility",
 								"5cda8a52734a719378fc6b3d"
@@ -604,14 +588,13 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"Pool side room\",\n    \"type\": \"SingleRoomApt\",\n    \"amenities\": [\"PrivatePool\"],\n    \"size\": \"12 SqM\",\n    \"view\": \"\",\n    \"price\": \"2400\"\n}"
+							"raw": "{\n\t\"name\": \"Pool side room\",\n    \"type\": \"SingleBedRoom\",\n    \"amenities\": [\"PrivatePool\"],\n    \"size\": \"12 SqM\",\n    \"view\": \"\",\n    \"price\": \"2400\",\n    \"count\": 12\n}"
 						},
 						"url": {
-							"raw": "localhost:3000/facility/room/5ce37e3c84e2b2ad2cab01be",
+							"raw": "{{DEV_SERVER}}/facility/room/5ce37e3c84e2b2ad2cab01be",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"facility",
 								"room",
@@ -637,11 +620,10 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3000/facility/room/5cdbe0c480e18304307ee75f/5cdbe77f7e9a9b41f03580e1",
+							"raw": "{{DEV_SERVER}}/facility/room/5cdbe0c480e18304307ee75f/5cdbe77f7e9a9b41f03580e1",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"facility",
 								"room",
@@ -668,11 +650,10 @@
 							"raw": "{\n\t\"price\": \"3000\",\n\t\"size\": \"20 SqM\"\n}"
 						},
 						"url": {
-							"raw": "localhost:3000/facility/room/5cdbe0c480e18304307ee75f/5cdbe77f7e9a9b41f03580e1",
+							"raw": "{{DEV_SERVER}}/facility/room/5cdbe0c480e18304307ee75f/5cdbe77f7e9a9b41f03580e1",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"facility",
 								"room",
@@ -979,11 +960,10 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3000/ui/dashboard/featuredproperty/5cdd1839e17be2805cccfc35",
+							"raw": "{{DEV_SERVER}}/ui/dashboard/featuredproperty/5cdd1839e17be2805cccfc35",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"ui",
 								"dashboard",
@@ -1068,11 +1048,10 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3000/ui/dashboard/places/id",
+							"raw": "{{DEV_SERVER}}/ui/dashboard/places/id",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"ui",
 								"dashboard",
@@ -1099,15 +1078,208 @@
 							"raw": "{\n   \"cityname\": \"bangalore\",\n   \"placename\": \"Marathalli\",\n   \"location\": {\n\t\t\"latitude\": 342945234234,\n\t\t\"longitude\": 34039452342\n\t},\n\t\"images\": []\n}"
 						},
 						"url": {
-							"raw": "localhost:3000/ui/dashboard/places",
+							"raw": "{{DEV_SERVER}}/ui/dashboard/places",
 							"host": [
-								"localhost"
+								"{{DEV_SERVER}}"
 							],
-							"port": "3000",
 							"path": [
 								"ui",
 								"dashboard",
 								"places"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "utils",
+			"item": [
+				{
+					"name": "Send Mail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/utils/sendmail?name=neeraj&mailid=neerajnan@gmail.com",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"utils",
+								"sendmail"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "neeraj"
+								},
+								{
+									"key": "mailid",
+									"value": "neerajnan@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reservation",
+			"item": [
+				{
+					"name": "Create Reservation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"guestid\": \"5ce51d95a75388453d9d0038\",\n    \"facilityid\": \"5cf7cb5855c6212b04164e68\",\n    \"checkindate\": \"2010-01-01T05:06+05:09\",\n    \"checkoutdate\": \"2010-01-01T05:06+05:09\",\n    \"status\": \"confirm\",\n    \"totalprice\": 2400,\n    \"specialrequest\": \"special request\",\n    \"payment\": \"paid\",\n    \"rooms\": [{\n    \t\"type\": \"\",\n    \t\"count\": 1,\n    \t\"price\": 100\n    }]\n}"
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/reservation",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"reservation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Reservation",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/reservation/5cfa188f4a0a185384515190",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"reservation",
+								"5cfa188f4a0a185384515190"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Reservation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"guestid\": \"5ce51d95a75388453d9d0038\",\n    \"facilityid\": \"5cf7cb5855c6212b04164e68\",\n    \"checkindate\": \"2010-01-01T05:06+05:09\",\n    \"checkoutdate\": \"2010-01-01T05:06+05:09\",\n    \"status\": \"confirm\",\n    \"totalprice\": 2400,\n    \"specialrequest\": \"special request\",\n    \"payment\": \"paid\",\n    \"rooms\": [{\n    \t\"type\": \"\",\n    \t\"count\": 1,\n    \t\"price\": 100\n    }]\n}"
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/room/5cdbe0c480e18304307ee75f/5cdbe77f7e9a9b41f03580e1",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"room",
+								"5cdbe0c480e18304307ee75f",
+								"5cdbe77f7e9a9b41f03580e1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reservation",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/reservation/5cfa1d0a5fcb7d5e90e4c277",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"reservation",
+								"5cfa1d0a5fcb7d5e90e4c277"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Reservations",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/reservation",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"reservation"
 							]
 						}
 					},
