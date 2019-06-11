@@ -2,6 +2,8 @@ var fs = require('fs');
 var FacilityModel = require('../model/facility.model');
 var MetaModel = require('../model/meta.model');
 var _ = require('lodash/array');
+var Uuid = require('uuid-lib');
+var mongoose = require('mongoose');
 
 exports.createFacility = function(req, res) {
     if (Object.keys(req.body).length === 0) {
@@ -18,6 +20,8 @@ exports.createFacility = function(req, res) {
         return res.status(400)
         .json({'error': 'Invalid amenities in the amenity list'});
     }
+    // Properties rooms & roomtypes are ignored.
+    // One must use room API to create rooms. 
     var facilityDoc = new FacilityModel({
         name: req.body.name,
         phonenumber1: req.body.phonenumber1,
@@ -26,8 +30,6 @@ exports.createFacility = function(req, res) {
         amenities: _.uniq(req.body.amenities),
         rules: req.body.rules,
         nearby: req.body.nearby,
-        rooms: req.body.rooms,
-        roomtypes: req.body.roomtypes,
         address: req.body.address
     });
     facilityDoc.save()
@@ -69,7 +71,11 @@ exports.updateFacility = function(req, res) {
     FacilityModel.findOne({_id: req.params.facilityid})
         .then(facility => {
             if (!facility) throw { code: 404 };
-        
+            
+            // Room and roomtype are not updatable via facility update API
+            // Instead one must call room update API.
+            delete req.body['rooms'];
+            delete req.body['roomtypes'];
             Object.assign(facility, req.body);
             return facility.save();
         }).then(facility => {
@@ -87,7 +93,9 @@ exports.updateFacility = function(req, res) {
 
 exports.listFacility = function(req, res) {
     if (req.params.facilityid) {
-        FacilityModel.findOne({_id: req.params.facilityid})
+        FacilityModel.findOne(
+            // Return all fields except 'rooms'.
+            {_id: req.params.facilityid}, {rooms: 0})
             .lean()
             .then(facility => {
                 if (!facility) return res.status(404).json({"error": "Facility does not exist."});
@@ -97,18 +105,29 @@ exports.listFacility = function(req, res) {
                 return res.status(500).send({"error": "Server error"});
             });
     } else {
-        FacilityModel.find(getFacilityFilter(req.query))
+        // Return all fields except 'rooms'.
+        FacilityModel.find(getFacilityFilter(req.query), {rooms: 0})
             .sort({ createdOn: 'desc'})
             .limit(10)
             .lean()
             .exec()
             .then(facilities => {
-                res.status(200).send(facilities);
+                //QSP: checkindate=<checkin-date>&checkoutdate=<checkout-date>
+                //Specify checkin and checkout date
+                if (req.query.checkindate && req.query.checkoutdate) {
+                    filterFacilitiesByReservationRequest(req, res, facilities);   
+                } else {
+                    res.status(200).send(facilities);
+                }
             }).catch(err => {
             // {"error": "Server error"}
                 return res.status(500).send(err);
             });
     }
+}
+
+var filterFacilitiesByReservationRequest = (req, res, facilities) => {
+    res.status(200).send(facilities);
 }
 
 var getFacilityFilter = (query) => {
@@ -132,7 +151,7 @@ var getFacilityFilter = (query) => {
     //QSP: roomtype=<room-type>
     //Returns all amenities which has at-least one room of this type
     if (query.roomtype) {
-        Object.assign(qsp, {'rooms.type': query.roomtype});
+        Object.assign(qsp, {'roomtypes.type': query.roomtype});
     }
     //QSP: ramenities=<room-amenities>
     //One can specify multiple amenities field in QSP
@@ -144,7 +163,7 @@ var getFacilityFilter = (query) => {
         // $elemMatch enables searching individual room independently.
         // Without it, room amenities are search at facility level, if a facility
         // contains all the room amenities across its room, they are also returned.
-        Object.assign(qsp, {'rooms': {$elemMatch: {'amenities': {$all: query.ramenities}}}});
+        Object.assign(qsp, {'roomtypes': {$elemMatch: {'amenities': {$all: query.ramenities}}}});
     }
     return qsp;
 }
@@ -162,17 +181,17 @@ exports.deleteFacility = function(req, res) {
 
 exports.checkIfRoomExist = function(facilityId, bookedRooms) {
     return new Promise((resolve, reject) => {
-        FacilityModel.findOne({_id: facilityId})
+        FacilityModel.findOne({_id: facilityId}, 'roomtypes')
         .then(facility => {
             if (!facility) 
                 reject({error: 'Facility does not exist.'});
             
             for (roomIndex in bookedRooms) {
                 // Check if the required room type exist
-                var room = facility.rooms.find(room => room.type === bookedRooms[roomIndex].type);
-                if (!room) reject({error: 'Room type ' + bookedRooms[roomIndex].type + ' does not exist.'});
+                var roomtype = facility.roomtypes.find(roomtype => roomtype.type === bookedRooms[roomIndex].type);
+                if (!roomtype) reject({error: 'Room type ' + bookedRooms[roomIndex].type + ' does not exist.'});
                 
-                if (room.count < bookedRooms[roomIndex].count)
+                if (roomtype.count < bookedRooms[roomIndex].count)
                     reject({error: 'Room count exceeds availablity.'});
             }
             resolve(true);
@@ -199,11 +218,25 @@ exports.createRoom = function(req, res) {
     if (MetaModel.isInvalidRoomType(req.body.type)) {
         return res.status(400).json({'error': 'Invalid room type'});
     }
+    // Ensure minroom number is provided
+    if (!req.body.minroomnumber || req.body.minroomnumber < 0) {
+        return res.status(400).json({'error': 'Invalid MIN room number'});
+    }
+    var roomTypeUuid = mongoose.Types.ObjectId();
+    console.log(roomTypeUuid);
+    
     FacilityModel.findOne({_id: req.params.facilityid})
         .then(facility => {
             if (!facility) return res.status(404).json({"error": "Facility does not exist."});
         
-            facility.rooms.push(req.body);
+            req.body._id = mongoose.Types.ObjectId(roomTypeUuid);
+            facility.roomtypes.push(req.body);
+        
+//            var roomnumber = req.body.minroomnumber;
+//            for (var i=0; i<req.body.count; i++) {
+//                facility.rooms.push({number: roomnumber++, 
+//                                     type: mongoose.Types.ObjectId(roomTypeUuid)});
+//            }
             return facility.save();
         }).then(facility => {
             return res.status(201).send(facility);

@@ -20,8 +20,16 @@ var imageSchema = new Schema({
 });
 
 var roomSchema = new Schema({
+    number: Number,
+    type: Schema.Types.ObjectId,
+    isAvailable: Boolean
+});
+
+var roomTypeSchema = new Schema({
     name: [String],
     type: String,
+    minroomnumber: Number,
+    maxroomnumber: Number,
     furnishing: String,
     size: String,
     view: String,
@@ -93,7 +101,7 @@ var facilitySchema = new Schema({
     },
     rules: [String],
     rooms: [roomSchema],
-    roomtypes: [String],
+    roomtypes: [roomTypeSchema],
     address: {
         line1: {
             type: String,
