@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
+var cors = require('cors');
 let mongoose = require('mongoose');
 
 let guestRoute = require('./routes/guest');
@@ -14,6 +15,8 @@ let reservationRoute = require('./routes/reservation');
 mongoose.connect('mongodb://localhost:27017/unorooms', {useNewUrlParser: true});
 
 var app = express();
+// TODO: Configure this properly when domain name is registered.
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use('/guest', guestRoute);
