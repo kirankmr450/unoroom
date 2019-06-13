@@ -81,18 +81,18 @@ exports.list = (req, res) => {
     } else {
         ReservationModel.find(getFilter(req.query))
             .sort({ createdOn: 'desc'})
-            .limit(20)
             .lean()
             .exec()
             .then(reservations => {
                 res.status(200).send(reservations);
             }).catch(err => {
-            console.log(err);
                 return res.status(500).send({"error": "Server error"});
             });
     }
 }
 
+// Create QSP from the filters.
+// Returns QSP object.
 function getFilter(query) {
     var qsp = {};
     if (query.guestid) {
@@ -104,14 +104,77 @@ function getFilter(query) {
     if (query.checkindate && query.checkoutdate) {
         var checkin = moment.tz(query.checkindate + ' 12:00', 'Asia/Calcutta');
         var checkout = moment.tz(query.checkoutdate + ' 12:00', 'Asia/Calcutta');
-        
+
         Object.assign(qsp, {$or: [
             {checkindate: {'$lte': checkin}, checkoutdate: {'$gt': checkin}},
             {checkindate: {'$lt': checkout}, checkoutdate: {'$gte': checkout}},
             {checkindate: {'$gt': checkin}, checkoutdate: {'$lt': checkout}}
         ]});
     }
+    if (query.roomtype) {
+        Object.assign(qsp, {'rooms.type': query.roomtype});
+    }
     return qsp;
+}
+
+
+// Fetch reserved room count of a given roomtype in a given facility. 
+// Supported query filters:
+//   facilityid: <facility-id>
+//   checkindate: <checkin-date>
+//   checkoutdate: <checkout-date>
+//   roomtype: <room-type>
+// Returns a promise
+exports.fetchReservedRoomCountByRoomType = (query) => {
+    var checkin = moment.tz(query.checkindate + ' 12:00', 'Asia/Calcutta');
+    var checkout = moment.tz(query.checkoutdate + ' 12:00', 'Asia/Calcutta');
+    
+    return ReservationModel.aggregate([
+        // Pick reservation for current facility only
+        {$match: {'facilityid': mongoose.Types.ObjectId(query.facilityid)}},
+        // Unwind rooms array. This create duplicate entry for each item in rooms.
+        {$unwind: '$rooms'},
+        // Match room type, checkin and checkout dates
+        {$match: {'rooms.type': query.roomtype,
+                  $or: [{checkindate: {$lte: checkin.toDate()}, checkoutdate: {$gt: checkin.toDate()}}, 
+                        {checkindate: {$lt: checkout.toDate()}, checkoutdate: {$gte: checkout.toDate()}}, 
+                        {checkindate: {$gt: checkin.toDate()}, checkoutdate: {$lt: checkout.toDate()}}
+                       ]
+                 }
+        },
+        // Count room numbers
+        {$group: {_id: null, count: {$sum: '$rooms.count'}}},
+        // Extract only the count
+        {$project: {_id: 0, count: 1}}
+    ]).then(res => (res.length === 0) ? 0 : res[0].count);
+}
+
+
+// Fetch all reserved room count in a given facility.
+// Supported query filters:
+//   facilityid: <facility-id>
+//   checkindate: <checkin-date>
+//   checkoutdate: <checkout-date>
+// Returns a promise
+exports.fetchAllReservedRoomCount = (query) => {
+    var checkin = moment.tz(query.checkindate + ' 12:00', 'Asia/Calcutta');
+    var checkout = moment.tz(query.checkoutdate + ' 12:00', 'Asia/Calcutta');
+    
+    return ReservationModel.aggregate([
+        // Pick reservation for current facility only
+        {$match: {'facilityid': mongoose.Types.ObjectId(query.facilityid)}},
+        // Match room type, checkin and checkout dates
+        {$match: {$or: [{checkindate: {$lte: checkin.toDate()}, checkoutdate: {$gt: checkin.toDate()}}, 
+                        {checkindate: {$lt: checkout.toDate()}, checkoutdate: {$gte: checkout.toDate()}}, 
+                        {checkindate: {$gt: checkin.toDate()}, checkoutdate: {$lt: checkout.toDate()}}
+                       ]
+                 }
+        },
+        // Unwind rooms array. This create duplicate entry for each item in rooms.
+        {$unwind: '$rooms'},
+        // Count room numbers
+        {$group: {_id: '$rooms.type', count: {$sum: '$rooms.count'}}},
+    ]);checkin
 }
 
 

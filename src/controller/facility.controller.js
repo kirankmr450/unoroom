@@ -20,6 +20,7 @@ exports.createFacility = function(req, res) {
     }
     var facilityDoc = new FacilityModel({
         name: req.body.name,
+        description: req.body.description,
         phonenumber1: req.body.phonenumber1,
         phonenumber2: req.body.phonenumber2,
         emailid: req.body.emailid,
@@ -27,7 +28,6 @@ exports.createFacility = function(req, res) {
         rules: req.body.rules,
         nearby: req.body.nearby,
         rooms: req.body.rooms,
-        roomtypes: req.body.roomtypes,
         address: req.body.address
     });
     facilityDoc.save()
@@ -99,16 +99,20 @@ exports.listFacility = function(req, res) {
     } else {
         FacilityModel.find(getFacilityFilter(req.query))
             .sort({ createdOn: 'desc'})
-            .limit(10)
             .lean()
-            .exec()
-            .then(facilities => {
-                res.status(200).send(facilities);
-            }).catch(err => {
-            // {"error": "Server error"}
-                return res.status(500).send(err);
-            });
+            .then(facilities => res.status(200).send(facilities))
+            .catch(err => res.status(500).send(err));
     }
+}
+
+
+exports.fetchAllFacilities = (query) => {
+    return FacilityModel.find(getFacilityFilter(query))
+        .lean().exec();
+}
+
+exports.fetchFacilityById = (facilityid) => {
+    return FacilityModel.findOne({_id: facilityid}).lean();
 }
 
 var getFacilityFilter = (query) => {
@@ -132,6 +136,7 @@ var getFacilityFilter = (query) => {
     //QSP: roomtype=<room-type>
     //Returns all amenities which has at-least one room of this type
     if (query.roomtype) {
+        if (Array.isArray(query.roomtype)) query.roomtype = query.roomtype[0];
         Object.assign(qsp, {'rooms.type': query.roomtype});
     }
     //QSP: ramenities=<room-amenities>

@@ -11,6 +11,7 @@ let metaRoute = require('./routes/meta');
 let uiRoute = require('./routes/ui');
 let utilsRoute = require('./routes/utils');
 let reservationRoute = require('./routes/reservation');
+let searchRoute = require('./routes/search');
 
 mongoose.connect('mongodb://localhost:27017/unorooms', {useNewUrlParser: true});
 
@@ -26,8 +27,7 @@ app.use('/meta', metaRoute);
 app.use('/ui', uiRoute);
 app.use('/utils', utilsRoute);
 app.use('/reservation', reservationRoute);
-
-
+app.use('/search', searchRoute);
 
 // Catch 404 error
 app.use((req, res, next) => {
