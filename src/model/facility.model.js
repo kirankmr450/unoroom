@@ -9,14 +9,11 @@ var requiredStringValidator = [
     '{PATH} cannot be empty'
 ];
 
-var imgItemSchema = new Schema({
-    url: String,
-    name: String
-});
-
-var imageSchema = new Schema({
+var imgSchema = new Schema({
     category: String,
-    urls: [imgItemSchema]
+    name: String,
+    mimetype: String,
+    thumbnail: Buffer
 });
 
 var roomSchema = new Schema({
@@ -28,10 +25,7 @@ var roomSchema = new Schema({
     amenities: [String],
     price: Number,
     count: Number,
-    images: {
-        thumbnails: [String],
-        img: [imageSchema]
-    }
+    images: [imgSchema]
 });
 
 var nearybySchema = new Schema({
@@ -87,13 +81,11 @@ var facilitySchema = new Schema({
         required: false
     },
     nearby: [nearybySchema],
-    images: {
-        thumbnails: [Buffer],
-        img: [imageSchema],
-    },
+    images: [imgSchema],
     rules: [String],
     rooms: [roomSchema],
     roomtypes: [String],
+    status: String,
     address: {
         line1: {
             type: String,

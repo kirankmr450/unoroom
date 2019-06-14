@@ -3,6 +3,9 @@ var FacilityModel = require('../model/facility.model');
 var MetaModel = require('../model/meta.model');
 var _ = require('lodash/array');
 
+const FACILITY_STATUS_ACTIVE = 'active';
+const FACILITY_STATUS_INACTIVE = 'inactive';
+
 exports.createFacility = function(req, res) {
     if (Object.keys(req.body).length === 0) {
         return res.status(400)
@@ -28,7 +31,8 @@ exports.createFacility = function(req, res) {
         rules: req.body.rules,
         nearby: req.body.nearby,
         rooms: req.body.rooms,
-        address: req.body.address
+        address: req.body.address,
+        status: FACILITY_STATUS_INACTIVE
     });
     facilityDoc.save()
         .then(doc => {
@@ -70,6 +74,7 @@ exports.updateFacility = function(req, res) {
         .then(facility => {
             if (!facility) throw { code: 404 };
         
+            delete req.body['status'];
             Object.assign(facility, req.body);
             return facility.save();
         }).then(facility => {
@@ -151,19 +156,57 @@ var getFacilityFilter = (query) => {
         // contains all the room amenities across its room, they are also returned.
         Object.assign(qsp, {'rooms': {$elemMatch: {'amenities': {$all: query.ramenities}}}});
     }
+    //QSP: status=active/inactive
+    if (query.isActive) {
+        Object.assign(qsp, {status: FACILITY_STATUS_ACTIVE});
+    }
     return qsp;
 }
 
 exports.deleteFacility = function(req, res) {
-    FacilityModel.findOneAndRemove({_id: req.params.facilityid})
-        .then(facility => {
-            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
-
-                return res.status(200).send(facility);
-            }).catch(err => {
-               return res.status(500).send({"error": "Server error"}); 
-            });
+    res.status(404).json({error: 'This API is no longer supported. Please invoke delist facility API to delist a property.'});
+//    FacilityModel.findOneAndRemove({_id: req.params.facilityid})
+//        .then(facility => {
+//            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
+//
+//                return res.status(200).send(facility);
+//            }).catch(err => {
+//               return res.status(500).send({"error": "Server error"}); 
+//            });
 }
+
+// Delist a facility
+exports.delistFacility = (req, res) => {
+    return FacilityModel.findByIdAndUpdate(
+            req.params.facilityid, 
+            {status: FACILITY_STATUS_INACTIVE}
+    ).then(facility => {
+        if (!facility) res.status(404).json({error: 'Facility not found.'});
+        res.status(200).json(facility);
+    }).catch(err => res.status(500).json(err));
+}
+
+// Publish a facility
+exports.publishFacility = (req, res) => {
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility.rooms || facility.rooms.length === 0) throw {code: 403};
+            var roomCount = facility.rooms.reduce((count, room) => count + room.count, 0);
+            if (roomCount === 0) throw {code: 403};
+        
+            facility.status = FACILITY_STATUS_ACTIVE;
+            return facility.save();
+        })
+        .then(facility => res.status(200).send(facility))
+        .catch(err => {
+            if (err.code === 403) {
+                return res.status(403).json({error: 'Facility does not have rooms. It cannot be published.'})
+            } else {
+                return res.status(500).send(err);
+            }
+        });
+}
+
 
 exports.checkIfRoomExist = function(facilityId, bookedRooms) {
     return new Promise((resolve, reject) => {

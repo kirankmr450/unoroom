@@ -4,6 +4,10 @@ var ReservationModel = require('../model/reservation.model')
 var FacilityCtrl = require('../controller/facility.controller')
 var GuestCtrl = require('../controller/guest.controller')
 
+const RESERVATION_STATUS_PENDING = 'pending';
+const RESERVATION_STATUS_CONFIRMED = 'confirmed';
+const RESERVATION_STATUS_CANCELLED = 'cancelled';
+
 exports.create = function(req, res) {
     if (Object.keys(req.body).length === 0) {
         return res.status(400)
@@ -46,7 +50,7 @@ exports.create = function(req, res) {
                 facilityid: mongoose.Types.ObjectId(req.body.facilityid),
                 checkindate: checkin.toDate(),
                 checkoutdate: checkout.toDate(),
-                status: req.body.status,
+                status: RESERVATION_STATUS_PENDING,
                 totalprice: req.body.totalprice,
                 specialrequest: req.body.specialrequest,
                 payment: req.body.payment,
@@ -130,8 +134,11 @@ exports.fetchReservedRoomCountByRoomType = (query) => {
     var checkout = moment.tz(query.checkoutdate + ' 12:00', 'Asia/Calcutta');
     
     return ReservationModel.aggregate([
-        // Pick reservation for current facility only
-        {$match: {'facilityid': mongoose.Types.ObjectId(query.facilityid)}},
+        // Filter by facilityid and reservation status
+        {$match: {'facilityid': mongoose.Types.ObjectId(query.facilityid),
+                  'status': {$ne: RESERVATION_STATUS_CANCELLED}
+                 }
+        },
         // Unwind rooms array. This create duplicate entry for each item in rooms.
         {$unwind: '$rooms'},
         // Match room type, checkin and checkout dates
@@ -161,8 +168,11 @@ exports.fetchAllReservedRoomCount = (query) => {
     var checkout = moment.tz(query.checkoutdate + ' 12:00', 'Asia/Calcutta');
     
     return ReservationModel.aggregate([
-        // Pick reservation for current facility only
-        {$match: {'facilityid': mongoose.Types.ObjectId(query.facilityid)}},
+        // Filter by facilityid and reservation status
+        {$match: {'facilityid': mongoose.Types.ObjectId(query.facilityid),
+                  'status': {$ne: RESERVATION_STATUS_CANCELLED}
+                 }
+        },
         // Match room type, checkin and checkout dates
         {$match: {$or: [{checkindate: {$lte: checkin.toDate()}, checkoutdate: {$gt: checkin.toDate()}}, 
                         {checkindate: {$lt: checkout.toDate()}, checkoutdate: {$gte: checkout.toDate()}}, 
@@ -178,29 +188,91 @@ exports.fetchAllReservedRoomCount = (query) => {
 }
 
 
+/**
+ * Update a reservation.
+ */
 exports.update = function(req, res) {
-//    if (Object.keys(req.body).length === 0) {
-//        return res.status(400)
-//            .json({"error": "Request body is missing"});
-//    }
-//    // GuestId cannot be changed.
-//    if (req.body.guestid !== undefined) {
-//        return res.status(400)
-//            .json({"error": "Guest Id cannot be changed"});
-//    }
+    if (Object.keys(req.body).length === 0) {
+        return res.status(400)
+            .json({"error": "Request body is missing"});
+    }
+    // GuestId cannot be changed.
+    if (req.body.guestid !== undefined) {
+        return res.status(400)
+            .json({"error": "Guest Id cannot be changed"});
+    }
     req.status(404).send('This API is not yet supported');
 }
 
-
-exports.delete = (req, res) => {
-    ReservationModel
-        .findOneAndRemove({_id: req.params.reservationid})
-        .then(rsv => {
-            if (!rsv) 
-                return res.status(404).json({"error": "Reservation does not exist."});
-
-            return res.status(200).send(rsv);
+/**
+ * Confirm a reservation.
+ */
+exports.confirmReservation = (req, res) => {
+    ReservationModel.findOne({_id: req.params.reservationid})
+        .then(reservation => {
+            if (!reservation) throw {code: 404};
+            if (!reservation.rooms || reservation.rooms.length === 0) throw {code: 4001};
+            var roomCount = reservation.rooms.reduce((count, room) => count + room.count, 0);
+            if (roomCount === 0) throw {code: 4001};
+            if (reservation.status === RESERVATION_STATUS_CONFIRMED) throw {code: 4002};
+        
+            //TODO: Should we check for latest availability before confirmation.
+        
+            reservation.status = RESERVATION_STATUS_CONFIRMED;
+            return reservation.save();
+        }).then(reservation => {
+            // TODO: Send confirmation mail to the guest.
+            
+            return res.status(200).send(reservation); 
         }).catch(err => {
-           return res.status(500).send({"error": "Server error"}); 
+            if (err.code === 404) return res.status(404).json({"error": "Reservation does not exist."});
+            if (err.code === 4001) return res.status(400).json({'error': 'Reservation cannot be confirmed. It does not have enough rooms.'});
+            if (err.code === 4002) return res.status(400).json({'error': 'Reservation is already confirmed.'});
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send({"error": "Server error"});
         });
+}
+
+
+/**
+ * Cancel a reservation.
+ */
+exports.cancelReservation = (req, res) => {
+    ReservationModel.findOne({_id: req.params.reservationid})
+        .then(reservation => {
+            if (!reservation) throw {code: 404};
+            if (reservation.status === RESERVATION_STATUS_CANCELLED) throw {code: 4001};
+        
+            //TODO: Should we check for latest availability before confirmation.
+        
+            reservation.status = RESERVATION_STATUS_CANCELLED;
+            return reservation.save();
+        }).then(reservation => {
+            // TODO: Send confirmation mail to the guest.
+            
+            return res.status(200).send(reservation); 
+        }).catch(err => {
+            if (err.code === 404) return res.status(404).json({"error": "Reservation does not exist."});
+            if (err.code === 4001) return res.status(400).json({'error': 'Reservation is already cancelled.'});
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send({"error": "Server error"});
+        });
+}
+
+
+// Deleting a reservation
+// No longer supported. You may cancel a reservation.
+exports.deleteReservation = (req, res) => {
+    return res.status(404).json({'error': 'This API is no longer supported. Please consider cancelling a reservation.'});
+    
+//    ReservationModel
+//        .findOneAndRemove({_id: req.params.reservationid})
+//        .then(rsv => {
+//            if (!rsv) 
+//                return res.status(404).json({"error": "Reservation does not exist."});
+//
+//            return res.status(200).send(rsv);
+//        }).catch(err => {
+//           return res.status(500).send({"error": "Server error"}); 
+//        });
 }

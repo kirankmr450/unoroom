@@ -1,5 +1,5 @@
 let express = require('express');
-let mailCtrl = require('../controller/mail.controller');
+let mailCtrl = require('../utils/mail.utils');
 
 let router = express.Router();
 

@@ -13,7 +13,8 @@ exports.searchAllFacilities = function(req, res) {
     FacilityController.fetchAllFacilities({
         city: req.query.city,
         amenities: req.query.amenities,
-        roomtype: req.query.roomtype
+        roomtype: req.query.roomtype,
+        isActive: true // Filter out delisted facilities
     })
         // Step-2: Check availability in each facility for the said dates
         // and filter unavailable facilities.
