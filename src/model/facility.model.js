@@ -11,8 +11,9 @@ var requiredStringValidator = [
 
 var imgSchema = new Schema({
     category: String,
-    name: String,
+    description: String,
     mimetype: String,
+    url: String,
     thumbnail: Buffer
 });
 

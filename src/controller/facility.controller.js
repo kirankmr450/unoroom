@@ -2,6 +2,8 @@ var fs = require('fs');
 var FacilityModel = require('../model/facility.model');
 var MetaModel = require('../model/meta.model');
 var _ = require('lodash/array');
+var Utils = require('../utils/utils');
+var ImgUtils = require('../utils/image.utils');
 
 const FACILITY_STATUS_ACTIVE = 'active';
 const FACILITY_STATUS_INACTIVE = 'inactive';
@@ -82,6 +84,65 @@ exports.updateFacility = function(req, res) {
         }).catch(err => {
             console.log(err);
             if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
+        
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send(err);
+        });
+}
+
+// Add image to a facility
+exports.uploadFacilityImage = (req, res) => {
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility) throw { code: 404 };
+        
+            var img = {
+                category: req.body.category,
+                description: req.body.description,
+                mimetype: req.file.mimetype,
+                url: ImgUtils.getFacilityImageFileUrl(req.params.facilityid, req.file.filename)
+            };
+            
+            facility.images.push(img);
+            return facility.save();
+        }).then(facility => {
+            return res.status(200).send(facility);
+        }).catch(err => {
+            console.log(err);
+            if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
+        
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send(err);
+        });
+}
+
+// Delete images associated with a facility.
+exports.deleteFacilityImage = (req, res) => {
+    var filepath;
+    
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility) throw { code: 404 };
+            
+            // Remember the image file name to be removed.
+            var img = facility.images.find(image => image._id == req.params.imageid);
+            if (!img) throw { code: 4041 };
+            filepath = ImgUtils.getFacilityImageFilePath(img.url);
+        
+            // Update the facility document
+            facility.images = facility.images.filter(image => image._id != req.params.imageid);
+            return facility.save();
+        }).then(res => {
+            // Remove the image file
+            return Utils.removeDir(filepath);
+        }).then(facility => {
+            return res.status(200).send(facility);
+        }).catch(err => {
+            console.log(err);
+            if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
+            if (err.code === 4041) return res.status(404).json({'error': 'Image does not exist in said facility.'});
         
             // Handle scenario when certain parameter type is incorrect.
             if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});

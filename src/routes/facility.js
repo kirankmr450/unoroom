@@ -1,6 +1,7 @@
 let express = require('express');
 let router = express.Router();
 let facilityCtrl = require('../controller/facility.controller');
+let ImgCtrl = require('../utils/image.utils');
 
 /**
  * Facility
@@ -9,8 +10,19 @@ let facilityCtrl = require('../controller/facility.controller');
 router.post('/', (req, res) => {
     return facilityCtrl.createFacility(req, res);
 });
-router.post('/upload/:facilityid', (req, res) => {
-    
+// Add image to a facility
+// Message body is as follows:
+//  file: <image-file>
+//  category: image-category-name
+//  description: image-description
+router.post('/image/:facilityid', ImgCtrl.Upload.single('file'), (req, res) => {
+    if (!req.file) return res.status(500).send({error: 'Error creating file'});
+    return facilityCtrl.uploadFacilityImage(req, res);
+});
+// Delete an image associated with a facility
+// Must specify the image id in the URL path.
+router.delete('/image/:facilityid/:imageid', (req, res) => {
+    return facilityCtrl.deleteFacilityImage(req, res);
 });
 
 // Get All Facilites
