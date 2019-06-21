@@ -12,6 +12,10 @@ exports.buildingAmenities = ["SwimmingPool", "Internet", "CarPark", "AirportTran
 
 exports.roomAmenities = ["AirConditioning", "NonSmoking", "Smoking", "Bathtub", "Kitchen", "PrivatePool", "TV", "Balcony", "Terrace", "CoffeeMaker", "Refrigerator", "WashingMachine", "Heating", "PetsAllowed", "SemiFurnished", "FullyFurnished"];
 
+exports.allAmenities = () => {
+    return exports.buildingAmenities.concat(exports.roomAmenities).sort();
+}
+
 exports.locationType = ["BusStand", "RailwayStation", "MetroStation", "Airport", "Beach", "ShoppingMall", "Downtown", "Pubs", "Park", "Temple", "Museum", "University", "Stadium", "Hospital"];
 
 exports.cities = {

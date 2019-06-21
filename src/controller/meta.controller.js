@@ -5,8 +5,7 @@ exports.getRoomTypes = function(req, res) {
 }
 
 exports.getBuildingAmenities = function(req, res) {
-    return res.status(200).json(
-        MetaModel.buildingAmenities.concat(MetaModel.roomAmenities).sort());
+    return res.status(200).json(MetaModel.allAmenities());
 }
 
 exports.getRoomAmenities = function(req, res) {

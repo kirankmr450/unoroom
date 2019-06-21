@@ -51,7 +51,7 @@ exports.createFacility = function(req, res) {
 }
 
 var isInvalidBuildingAmenities = (amenities) => {
-    var diff = _.difference(amenities, MetaModel.buildingAmenities);
+    var diff = _.difference(amenities, MetaModel.allAmenities());
     if (diff.length > 0) return true;
     return false;
 }
