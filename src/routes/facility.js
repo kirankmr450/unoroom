@@ -24,9 +24,17 @@ router.post('/image/:facilityid', ImgCtrl.Upload.single('file'), (req, res) => {
 router.delete('/image/:facilityid/:imageid', (req, res) => {
     return facilityCtrl.deleteFacilityImage(req, res);
 });
+// Get facility image file
+router.get('/image/:filename', (req, res) => {
+    return facilityCtrl.getFacilityImage(req, res); 
+});
 
 // Get All Facilites
 router.get('/', (req, res) => {
+    return facilityCtrl.listFacility(req, res);
+});
+// Get a facility by facility id
+router.get('/:facilityid', (req, res) => {
     return facilityCtrl.listFacility(req, res);
 });
 // Get all unique cities where property exist
@@ -36,10 +44,6 @@ router.get('/cities', (req, res) => {
 // Get all unique localities where property exist for a given city
 router.get('/localities', (req, res) => {
    return facilityCtrl.getUniqueLocalities(req, res); 
-});
-// Get a facility by facility id
-router.get('/:facilityid', (req, res) => {
-    return facilityCtrl.listFacility(req, res);
 });
 
 
@@ -74,6 +78,15 @@ router.put('/publish/:facilityid', (req, res) => {
 // Create new room
 router.post('/room/:facilityid', (req, res) => {
     return facilityCtrl.createRoom(req, res);
+});
+// Add image to a room
+// Message body is as follows:
+//  file: <image-file>
+//  category: image-category-name
+//  description: image-description
+router.post('/room/image/:facilityid', ImgCtrl.Upload.single('file'), (req, res) => {
+    if (!req.file) return res.status(500).send({error: 'Error creating file'});
+    return facilityCtrl.uploadFacilityImage(req, res);
 });
 // Update room by facility id and room id
 router.put('/room/:facilityid/:roomid', (req, res) => {

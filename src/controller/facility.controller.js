@@ -1,4 +1,5 @@
 var fs = require('fs');
+var resolve = require('path').resolve;
 var FacilityModel = require('../model/facility.model');
 var MetaModel = require('../model/meta.model');
 var _ = require('lodash/array');
@@ -77,6 +78,7 @@ exports.updateFacility = function(req, res) {
             if (!facility) throw { code: 404 };
         
             delete req.body['status'];
+            delete req.body['images'];
             Object.assign(facility, req.body);
             return facility.save();
         }).then(facility => {
@@ -101,7 +103,7 @@ exports.uploadFacilityImage = (req, res) => {
                 category: req.body.category,
                 description: req.body.description,
                 mimetype: req.file.mimetype,
-                url: ImgUtils.getFacilityImageFileUrl(req.params.facilityid, req.file.filename)
+                url: ImgUtils.getImageFileUrl(req.params.facilityid, req.file.filename)
             };
             
             facility.images.push(img);
@@ -116,6 +118,18 @@ exports.uploadFacilityImage = (req, res) => {
             if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
             return res.status(500).send(err);
         });
+}
+
+// Get facility image
+exports.getFacilityImage = (req, res) => {
+    var filepath = ImgUtils.getFacilityImageFilePath(req.originalUrl);
+    console.log(filepath);
+    
+    // Handle inexistent file path
+    if (!filepath || !fs.existsSync(filepath)) {
+        return res.status(404).json({error: 'File does not exist'});
+    }
+    return res.sendFile(resolve(filepath));
 }
 
 // Delete images associated with a facility.

@@ -4,11 +4,11 @@ var mkdirp = require('mkdirp');
 const BASE_IMG_FOLDER = './public/images/';
 const FACILITY_FOLDER_NAME = 'facility/'
 
-const API_BASE_URL = './image/'
+const API_BASE_URL = '/image/'
 
 var storage = Multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, getFacilityFolder(req.params.facilityid));
+        cb(null, getFolderPath(req));
     },
     
     filename: (req, file, cb) => {
@@ -27,6 +27,14 @@ var storage = Multer.diskStorage({
     }
 });
 
+var getFolderPath = (req) => {
+    if (req.originalUrl.indexOf('room/') == -1) {
+        return getFacilityFolder(req.params.facilityid);
+    } else {
+        return getRoomFolder(req.params.facilityid, req.params.roomid);
+    }
+}
+
 // Create folder for the facility
 // Returns folder name
 var getFacilityFolder = (facilityid) => {
@@ -35,6 +43,13 @@ var getFacilityFolder = (facilityid) => {
     return foldername;
 }
 
+var getRoomFolder = (facilityid, roomid) => {
+    var foldername = BASE_IMG_FOLDER + FACILITY_FOLDER_NAME + facilityid + '/' + roomid;
+    mkdirp.sync(foldername);
+    return foldername;
+}
+
+// Create image file name based on current timestamp
 var getFilename = () => {
     var hrTime = process.hrtime();
     var filename = hrTime[0] * 1000000000 + hrTime[1];
@@ -42,8 +57,10 @@ var getFilename = () => {
     return filename;
 }
 
-exports.getFacilityImageFileUrl = (facilityId, imgFileName) => {
-    return API_BASE_URL + facilityId + '_' + imgFileName;
+// Fetch image file url for the entity
+// Where, entity could be facility/room.
+exports.getImageFileUrl = (entityId, imgFileName) => {
+    return API_BASE_URL + entityId + '_' + imgFileName;
 }
 
 exports.getFacilityImageFilePath = (imgurl) => {
