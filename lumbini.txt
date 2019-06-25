@@ -9,8 +9,7 @@ Installing a module in node
 
 UnoRoom Server
 --------------
-lumbini/lumbini
-577246186
+1513464289/India123
 - MONGO-DB
 cd /d/uno/unoroom/mongodb/
 /c/Program\ Files/MongoDB/Server/4.0/bin/mongod.exe --dbpath .

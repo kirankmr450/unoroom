@@ -323,16 +323,16 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"address\": {\n        \"city\": \"bangalore\",\n        \"locality\": \"whitefield\"\n    }\n}"
+							"raw": "{\n\t\"amenities\": [\"AirConditioning\", \"Balcony\"\n\t]\n}"
 						},
 						"url": {
-							"raw": "{{DEV_SERVER}}/facility/5ce4dedd5ba8ed4ef4682683",
+							"raw": "{{DEV_SERVER}}/facility/5d0cd09a9feebb67ec3228a9",
 							"host": [
 								"{{DEV_SERVER}}"
 							],
 							"path": [
 								"facility",
-								"5ce4dedd5ba8ed4ef4682683"
+								"5d0cd09a9feebb67ec3228a9"
 							]
 						}
 					},
@@ -543,6 +543,168 @@
 								"nearby",
 								"5cf7c9c555c6212b04164e66",
 								"5cf8940a5004755cbc6e637e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delist Facility",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/delist/5d020cf6f627bc0c4c78807f",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"delist",
+								"5d020cf6f627bc0c4c78807f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Facility",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/publish/5d011a3750d8e95e70baf626",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"publish",
+								"5d011a3750d8e95e70baf626"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload an image",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": ""
+								},
+								{
+									"key": "category",
+									"value": "building",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Front porch",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/image/5d0b5d682579c9410090f0ed",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"image",
+								"5d0b5d682579c9410090f0ed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Facility Image",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/image/5d0b5d682579c9410090f0ed/5d0b5ee75e83451398e30993",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"image",
+								"5d0b5d682579c9410090f0ed",
+								"5d0b5ee75e83451398e30993"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a Facility Image",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/image/5d0b5d682579c9410090f0ed_83813317172718.png",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"image",
+								"5d0b5d682579c9410090f0ed_83813317172718.png"
 							]
 						}
 					},
@@ -1280,6 +1442,156 @@
 							],
 							"path": [
 								"reservation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Reservation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/reservation/confirm/5cfa188f4a0a185384515190",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"reservation",
+								"confirm",
+								"5cfa188f4a0a185384515190"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel a Reservation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/reservation/cancel/5cfa188f4a0a185384515190",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"reservation",
+								"cancel",
+								"5cfa188f4a0a185384515190"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Fetch Available Facilities",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/search/facilities?roomtype=SingleBedRoom&checkindate=2019-05-12&checkoutdate=2019-05-22",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"search",
+								"facilities"
+							],
+							"query": [
+								{
+									"key": "roomtype",
+									"value": "SingleBedRoom"
+								},
+								{
+									"key": "checkindate",
+									"value": "2019-05-12"
+								},
+								{
+									"key": "checkoutdate",
+									"value": "2019-05-22"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch Availability in a Facility",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/search/facility/5cffe1cfa88b7c1434904a90?checkindate=2019-05-12&checkoutdate=2019-05-22",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"search",
+								"facility",
+								"5cffe1cfa88b7c1434904a90"
+							],
+							"query": [
+								{
+									"key": "checkindate",
+									"value": "2019-05-12"
+								},
+								{
+									"key": "checkoutdate",
+									"value": "2019-05-22"
+								}
 							]
 						}
 					},
