@@ -127,8 +127,11 @@ exports.getFeaturedProperty = function(req, res) {
 }
 
 exports.addFeaturedProperty = function(req, res) {
-    UiModel.findOne()
-        .then(uiContentDocument => {
+    FacilityModel.findById(req.params.propertyid)
+        .then(facility => {
+            if (!facility) throw {code: 404};
+            return UiModel.findOne(); 
+        }).then(uiContentDocument => {
             if (!uiContentDocument) {
                 uiContentDocument = new UiModel({
                     keyplaces: [],
@@ -139,8 +142,9 @@ exports.addFeaturedProperty = function(req, res) {
             }
             return uiContentDocument.save();
         }).then(uiContentDocument => {
-            return res.status(200).send("Property marked as featured.");
+            return res.status(200).send({message: "Property marked as featured."});
         }).catch(err => {
+            if (err.code === 404) return res.status(404).send({'error': 'Property does not exist.'});
             if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
             return res.status(500).json(err);
         });
@@ -159,7 +163,7 @@ exports.deleteFeaturedProperty = function(req, res) {
         }).then(uiContentDocument => {
             return res.status(200).send('Property unmarked as featured.');
         }).catch(err => {
-            if (err.code === 200) return res.status(200).send('Property unmarked as featured.');
+            if (err.code === 200) return res.status(200).send({message: 'Property unmarked as featured.'});
             if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
             return res.status(500).json(err);
         });

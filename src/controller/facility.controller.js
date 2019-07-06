@@ -385,6 +385,86 @@ var isInvalidRoomAmenities = (amenities) => {
     return false;
 }
 
+// Upload room image
+exports.uploadRoomImage = (req, res) => {
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility) throw { code: 404 };
+        
+            for (roomIndex in facility.rooms) {
+                if (facility.rooms[roomIndex]._id == req.params.roomid) {
+                    Object.assign(facility.rooms[roomIndex], req.body);
+                    return facility.save();        
+                }
+            }
+            
+            throw { code: 4041 };
+        
+            var img = {
+                category: req.body.category,
+                description: req.body.description,
+                mimetype: req.file.mimetype,
+                url: ImgUtils.getImageFileUrl(req.params.facilityid, req.file.filename)
+            };
+            
+            facility.images.push(img);
+            return facility.save();
+        }).then(facility => {
+            return res.status(200).send(facility);
+        }).catch(err => {
+            console.log(err);
+            if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
+        
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send(err);
+        });
+}
+
+// Get Room image
+exports.getRoomImage = (req, res) => {
+    var filepath = ImgUtils.getFacilityImageFilePath(req.originalUrl);
+    console.log(filepath);
+    
+    // Handle inexistent file path
+    if (!filepath || !fs.existsSync(filepath)) {
+        return res.status(404).json({error: 'File does not exist'});
+    }
+    return res.sendFile(resolve(filepath));
+}
+
+// Delete images associated with a Room.
+exports.deleteRoomImage = (req, res) => {
+    var filepath;
+    
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility) throw { code: 404 };
+            
+            // Remember the image file name to be removed.
+            var img = facility.images.find(image => image._id == req.params.imageid);
+            if (!img) throw { code: 4041 };
+            filepath = ImgUtils.getFacilityImageFilePath(img.url);
+        
+            // Update the facility document
+            facility.images = facility.images.filter(image => image._id != req.params.imageid);
+            return facility.save();
+        }).then(res => {
+            // Remove the image file
+            return Utils.removeDir(filepath);
+        }).then(facility => {
+            return res.status(200).send(facility);
+        }).catch(err => {
+            console.log(err);
+            if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
+            if (err.code === 4041) return res.status(404).json({'error': 'Image does not exist in said facility.'});
+        
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send(err);
+        });
+}
+
 /**
  * Delete room under a given facility.
  */

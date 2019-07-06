@@ -84,10 +84,21 @@ router.post('/room/:facilityid', (req, res) => {
 //  file: <image-file>
 //  category: image-category-name
 //  description: image-description
-router.post('/room/image/:facilityid', ImgCtrl.Upload.single('file'), (req, res) => {
+router.post('/room/image/:facilityid/:roomid', ImgCtrl.Upload.single('file'), (req, res) => {
     if (!req.file) return res.status(500).send({error: 'Error creating file'});
-    return facilityCtrl.uploadFacilityImage(req, res);
+    return facilityCtrl.uploadRoomImage(req, res);
 });
+// Delete an image associated with a room
+// Must specify the image id in the URL path.
+router.delete('/room/image/:facilityid/:imageid', (req, res) => {
+    return facilityCtrl.deleteFacilityImage(req, res);
+});
+// Get Room image file
+router.get('/room/image/:filename', (req, res) => {
+    return facilityCtrl.getFacilityImage(req, res); 
+});
+
+
 // Update room by facility id and room id
 router.put('/room/:facilityid/:roomid', (req, res) => {
     return facilityCtrl.updateRoom(req, res);
