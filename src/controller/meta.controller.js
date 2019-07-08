@@ -4,6 +4,10 @@ exports.getRoomTypes = function(req, res) {
     return res.status(200).json(MetaModel.roomTypes);
 }
 
+exports.getBuildingTypes = function(req, res) {
+    return res.status(200).json(MetaModel.buildingTypes);
+}
+
 exports.getBuildingAmenities = function(req, res) {
     return res.status(200).json(MetaModel.allAmenities());
 }
@@ -27,6 +31,10 @@ exports.getLocalities = function(req, res) {
         localities = MetaModel.cities[req.query.city];
     }
     return res.status(200).json(localities.sort());
+}
+
+exports.getStates = (req, res) => {
+    return res.status(200).json(MetaModel.indianStates.map((s) => s.name));
 }
 
 exports.getCountries = function(req, res) {

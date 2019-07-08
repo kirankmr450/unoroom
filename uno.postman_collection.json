@@ -266,7 +266,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"Brigade Metropolis\",\n    \"phonenumber1\": \"345365463435\",\n    \"phonenumber2\": \"95675534542\",\n    \"emailid\": \"abc@gmail.com\",\n    \"amenities\": [\"SwimmingPool\", \"Spa\"],\n    \"rules\": [\"Rule-1\", \"Rule-2\"],\n    \"address\": {\n    \t\"line1\": \"Address Line 1\",\n    \t\"line2\": \"Address Line 2\",\n    \t\"locality\": \"Whitefield\",\n    \t\"city\": \"Bangalore\",\n    \t\"pin\": \"560066\",\n    \t\"country\": \"India\",\n    \t\"location\": {\n    \t\t\"latitude\": 12.9829735,\n    \t\t\"longitude\": 77.687969\n    \t}\n    },\n    \"nearby\": [{\n    \t\"name\": \"Taj\",\n    \t\"locationtype\": \"BusStand\",\n    \t\"location\": {\n    \t\t\"latitude\": 12.9829735,\n    \t\t\"longitude\": 77.687969\n    \t},\n    \t\"distanceinmeters\": 2324\n    }]\n}"
+							"raw": "{\n\t\"name\": \"Brigadeeeee\",\n    \"phonenumber1\": \"345365463435\",\n    \"phonenumber2\": \"95675534542\",\n    \"emailid\": \"abc@gmail.com\",\n    \"amenities\": [\"SwimmingPool\", \"Spa\"],\n    \"rules\": [\"Rule-1\", \"Rule-2\"],\n    \"buildingtype\": \"Hotel\",\n    \"address\": {\n    \t\"line1\": \"Address Line 1\",\n    \t\"line2\": \"Address Line 2\",\n    \t\"locality\": \"Whitefield\",\n    \t\"city\": \"Bangalore\",\n    \t\"pin\": \"560066\",\n    \t\"state\": \"Karnataka\",\n    \t\"country\": \"India\",\n    \t\"location\": {\n    \t\t\"latitude\": 12.9829735,\n    \t\t\"longitude\": 77.687969\n    \t}\n    },\n    \"nearby\": [{\n    \t\"name\": \"Taj\",\n    \t\"locationtype\": \"BusStand\",\n    \t\"location\": {\n    \t\t\"latitude\": 12.9829735,\n    \t\t\"longitude\": 77.687969\n    \t},\n    \t\"distanceinmeters\": 2324\n    }]\n}"
 						},
 						"url": {
 							"raw": "{{DEV_SERVER}}/facility",
@@ -607,7 +607,7 @@
 					"response": []
 				},
 				{
-					"name": "Upload an image",
+					"name": "Upload a facility image",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -821,6 +821,113 @@
 								"room",
 								"5cdbe0c480e18304307ee75f",
 								"5cdbe77f7e9a9b41f03580e1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload a room image",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": ""
+								},
+								{
+									"key": "category",
+									"value": "building",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Front porch",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/room/image/5d0cd09a9feebb67ec3228a9",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"room",
+								"image",
+								"5d0cd09a9feebb67ec3228a9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Room Image",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/room/image/5d0b5d682579c9410090f0ed/5d0b5ee75e83451398e30993",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"room",
+								"image",
+								"5d0b5d682579c9410090f0ed",
+								"5d0b5ee75e83451398e30993"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a Room Image",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/facility/room/image/5d0cd09a9feebb67ec3228a9_6697369802972.jpg",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"facility",
+								"room",
+								"image",
+								"5d0cd09a9feebb67ec3228a9_6697369802972.jpg"
 							]
 						}
 					},
@@ -1049,6 +1156,37 @@
 							"path": [
 								"meta",
 								"countries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All States",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/meta/states",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"meta",
+								"states"
 							]
 						}
 					},

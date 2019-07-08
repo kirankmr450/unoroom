@@ -55,6 +55,10 @@ var nearybySchema = new Schema({
 });
 
 var facilitySchema = new Schema({
+    facilityid: {
+        type: String,
+        required: false,
+    },
     name: {
         type: String, 
         required: true,
@@ -80,6 +84,10 @@ var facilitySchema = new Schema({
     amenities: {
         type: [String],
         required: false
+    },
+    buildingtype: {
+        type: String,
+        required: true,
     },
     nearby: [nearybySchema],
     images: [imgSchema],
@@ -108,6 +116,9 @@ var facilitySchema = new Schema({
             type: String,
             required: false
         },
+        state: {
+            type: String
+        },
         country: {
             type: String,
             required: false
@@ -126,4 +137,5 @@ var facilitySchema = new Schema({
     }
 });
 
+facilitySchema.index({ name: 'text' });
 module.exports = mongoose.model('Facility', facilitySchema);

@@ -7,6 +7,10 @@ router.get('/roomtypes', (req, res) => {
    return metaCtrl.getRoomTypes(req, res); 
 });
 
+router.get('/buildingtypes', (req, res) => {
+   return metaCtrl.getBuildingTypes(req, res); 
+});
+
 router.get('/buildingamenities', (req, res) => {
    return metaCtrl.getBuildingAmenities(req, res); 
 });
@@ -27,7 +31,15 @@ router.get('/localities', (req, res) => {
     return metaCtrl.getLocalities(req, res);
 });
 
+router.get('/states', (req, res) =>{
+    return metaCtrl.getStates(req, res);
+});
+
 router.get('/countries', (req, res) => {
     return metaCtrl.getCountries(req, res); 
+});
+
+router.post('/property', (req, res) => {
+    return metaCtrl.getPropertyRecord(req, res); 
 });
 module.exports = router;

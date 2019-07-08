@@ -2,12 +2,14 @@ var fs = require('fs');
 var resolve = require('path').resolve;
 var FacilityModel = require('../model/facility.model');
 var MetaModel = require('../model/meta.model');
+var PropCtrl = require('./propertyid.controller');
 var _ = require('lodash/array');
 var Utils = require('../utils/utils');
 var ImgUtils = require('../utils/image.utils');
 
 const FACILITY_STATUS_ACTIVE = 'active';
 const FACILITY_STATUS_INACTIVE = 'inactive';
+
 
 exports.createFacility = function(req, res) {
     if (Object.keys(req.body).length === 0) {
@@ -24,31 +26,42 @@ exports.createFacility = function(req, res) {
         return res.status(400)
         .json({'error': 'Invalid amenities in the amenity list'});
     }
-    var facilityDoc = new FacilityModel({
-        name: req.body.name,
-        description: req.body.description,
-        phonenumber1: req.body.phonenumber1,
-        phonenumber2: req.body.phonenumber2,
-        emailid: req.body.emailid,
-        amenities: _.uniq(req.body.amenities),
-        rules: req.body.rules,
-        nearby: req.body.nearby,
-        rooms: req.body.rooms,
-        address: req.body.address,
-        status: FACILITY_STATUS_INACTIVE
-    });
-    facilityDoc.save()
-        .then(doc => {
+    // Ensure building type belong to meta.model.buildingTypes
+    if (MetaModel.isInvalidBuildingType(req.body.buildingtype)) {
+        return res.status(400).json({'error': 'Invalid building type'});
+    }
+    PropCtrl.getLatestPropertyId(req.body.address.city)
+        .then(propertyid => {
+            var facilityDoc = new FacilityModel({
+                facilityid: propertyid,
+                name: req.body.name,
+                description: req.body.description,
+                phonenumber1: req.body.phonenumber1,
+                phonenumber2: req.body.phonenumber2,
+                emailid: req.body.emailid,
+                amenities: _.uniq(req.body.amenities),
+                buildingtype: req.body.buildingtype,
+                rules: req.body.rules,
+                nearby: req.body.nearby,
+                rooms: req.body.rooms,
+                address: req.body.address,
+                status: FACILITY_STATUS_INACTIVE
+            });
+            return facilityDoc.save();
+        }).then(doc => {
             if (!doc || doc.length === 0) {
                 return res.status(500).json({"error": "Error creating guest."});
             }
             return res.status(201).send(doc);
-    }).catch(err => {
-        // Handle scenario when certain parameter type is incorrect.
-        if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-        return res.status(500).json(err);
-    });
+        }).catch(err => {
+            // Capture error from getLatestPropertyId()
+            if (err === 404) return res.status(404).send({error: 'Invalid city'});
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).json(err);
+        });
 }
+
 
 var isInvalidBuildingAmenities = (amenities) => {
     var diff = _.difference(amenities, MetaModel.allAmenities());
@@ -73,10 +86,15 @@ exports.updateFacility = function(req, res) {
         return res.status(400)
         .json({'error': 'Invalid amenities in the amenity list'});
     }
+    // If buildingtype is provided, ensure building type belong to meta.model.buildingTypes
+    if (req.body.buildingtype !== undefined && MetaModel.isInvalidBuildingType(req.body.buildingtype)) {
+        return res.status(400).json({'error': 'Invalid building type'});
+    }
     FacilityModel.findOne({_id: req.params.facilityid})
         .then(facility => {
             if (!facility) throw { code: 404 };
         
+            delete req.body['facilityid'];
             delete req.body['status'];
             delete req.body['images'];
             Object.assign(facility, req.body);
@@ -198,6 +216,11 @@ exports.fetchFacilityById = (facilityid) => {
 var getFacilityFilter = (query) => {
     // Individual QSP fields are 'AND'ed
     var qsp = {};
+    // QSP: name=<facility-name>/<facilityid>
+    if (query.name && typeof query.name === 'string') {
+        Object.assign(qsp, {$text: {$search: query.name, $caseSensitive: false}});
+    }
+    
     // QSP: city=<comma-separated-cities> (bangalore,ahmedabad)
     // Each city name is 'OR'ed. i.e. Returns facilities in any of those cities.
     // 'city' param should be provided only once.
