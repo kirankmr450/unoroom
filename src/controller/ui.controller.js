@@ -114,7 +114,7 @@ exports.getFeaturedProperty = function(req, res) {
             }
         
             return FacilityModel
-                .find({_id: {$in: response.featuredproperty}}, 'name roomtypes address images amenities nearby')
+                .find({_id: {$in: response.featuredproperty}}, 'facilityid name buildingtype roomtypes status address images amenities nearby')
                 .sort({createdOn: 'desc'})
                 .lean()
                 .exec();

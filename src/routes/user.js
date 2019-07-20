@@ -16,8 +16,8 @@ router.post('/', (req, res, next) => {
     return userCtrl.createUser(req, res, next);
 });
 
-// User id details can be fetched by someone on his own userid
-// or by Admin
+// User details by userid can be fetched by admin
+// Non-admin user can fetch details about himself.
 router.get('/:userid', (req, res, next) => {
     if (!req.user) return next(Error.ForbiddenError('Insufficient permission.'));
     if (req.user.role !== 'Admin' && req.user.id != req.params.userid)
@@ -25,6 +25,8 @@ router.get('/:userid', (req, res, next) => {
     return userCtrl.listUser(req, res, next);
 });
 
+// All users can be updated by admin
+// Non-admin user can update himself.
 router.put('/:userid', (req, res, next) => {
     if (!req.user) return next(Error.ForbiddenError('Insufficient permission.'));
     if (req.user.role !== 'Admin' && req.user.id != req.params.userid)
@@ -32,11 +34,13 @@ router.put('/:userid', (req, res, next) => {
     return userCtrl.updateUser(req, res, next);
 });
 
+// A user can be activated by admin only
 router.post('/activate/:userid', (req, res, next) => {
     if (!req.user || req.user.role !== 'Admin') return next(Error.ForbiddenError('Insufficient permission.'));
     return userCtrl.activateUser(req, res, next);
 });
 
+// A user can be deactivated by admin only
 router.post('/deactivate/:userid', (req, res, next) => {
     if (!req.user || req.user.role !== 'Admin') return next(Error.ForbiddenError('Insufficient permission.'));
     return userCtrl.deactivateUser(req, res, next);
