@@ -80,64 +80,29 @@ exports.deactivateUser = async (req, res, next) => {
 }
 
 
-
-// TODO: User can only change his own details
+// Updates a user
 exports.updateUser = async (req, res, next) => {
     try {
         if (Object.keys(req.body).length === 0) throw Error.UserError('Request body is missing');
         if (req.body.firstname !== undefined && !req.body.firstname) 
             throw Error.UserError('Mandatory field "firstname" missing.');
-    } catch (e) {
-        // Email id is unique in the table. 
-        // Handle duplicate email error message.
-        if (e.code === 11000) return next(Error.ConflictError('Duplicate email id.'));
+        var user = await UserModel.findById(req.params.userid).exec();
+        if (!user) throw Error.MissingItemError('User not found');
+
+        if (req.body.firstname !== undefined) user.firstname = req.body.firstname;
+        if (req.body.lastname !== undefined) user.lastname = req.body.lastname;
+        
+        user = await user.save();
+        return res.status(200).send({
+            _id: user._id,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            username: user.username});
+    } catch(e) {
         // Handle scenario when certain parameter type is incorrect.
         if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
-        if (!e instanceof Error) return next(Error.ServerError('Server Error'));
         return next(e);
     }
-
-    if (Object.keys(req.body).length === 0) {
-        return res.status(400)
-            .json({
-                "error": "Request body is missing"
-            });
-    }
-    // If 'firstname' is provided, it must not be empty string.
-    if (req.body.firstname !== undefined &&
-        !req.body.firstname) {
-        return res.status(400)
-            .json({
-                "error": "Mandatory field 'firstname' cannot be empty."
-            })
-    }
-
-    UserModel.findOne({
-            _id: req.params.userid
-        })
-        .then(user => {
-            if (!user) throw {
-                code: 404
-            };
-
-            delete req.body['emailid'];
-            delete req.body['isNewUser'];
-            delete req.body['password'];
-            Object.assign(user, req.body);
-            return user.save();
-        }).then(user => {
-            return res.status(200).send("");
-        }).catch(err => {
-            console.log(err);
-            if (err.code === 404) return res.status(404).json({
-                'error': 'User does not exist.'
-            });
-            // Handle scenario when certain parameter type is incorrect.
-            if (err.name == 'CastError') return res.status(400).send({
-                'error': 'Invalid argument'
-            });
-            return res.status(500).send(err);
-        });
 }
 
 
@@ -152,14 +117,14 @@ var isInvalidUserRole = (role) => {
 exports.listUser = async (req, res, next) => {
     try {
         if (req.params.userid) {
-            var user = UserModel.findOne({_id: req.params.userid}, 
+            var user = await UserModel.findOne({_id: req.params.userid}, 
                                           {passowrd: 0, isNewUser: 0, active: 0}).lean().exec();
             if (!user) throw Error.MissingItem('User does not exist.');
             return res.status(200).send(user);
         } else {
-            var users = await UserModel.find({role: {$ne: 'Admin'}}, {password: 0}).lean().exec();
-            if (!users) return res.status(200).send(users);
-            throw Error.ServerError('Something went wrong.');
+            var users = await UserModel.find({_id: {$ne: req.user.id}}, {password: 0}).lean().exec();
+            if (!users) throw Error.ServerError('Something went wrong.');
+            return res.status(200).send(users);
         }
     } catch (e) {
         if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));

@@ -141,6 +141,9 @@ var getStrategy = () => {
         UserModel.findById(payload.userid, (err, user) => {
             if (err) return done(err);
             if (user === null) return done(null, false, { message: "The user in the token was not found" });
+            
+            // If user is inactive, throw error.
+            if (!user.active) return done(Error.ForbiddenError('Insufficient access'));
 
             // Returns User object in app for user to inspect.
             return done(null, { id: user._id, isNewUser: user.isNewUser, role: user.role });
