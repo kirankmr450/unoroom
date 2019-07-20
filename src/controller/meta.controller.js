@@ -17,6 +17,10 @@ exports.getRoomAmenities = function(req, res) {
     return res.status(404).json('This API is no longer supported. Use building amenities API.');
 }
 
+exports.getUserRoles = (req, res) => {
+    return res.status(200).json(MetaModel.userRoles);
+}
+
 exports.getLocationTypes = function(req, res) {
     return res.status(200).json(MetaModel.locationType);
 }

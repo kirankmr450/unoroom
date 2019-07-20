@@ -39,7 +39,7 @@ router.get('/countries', (req, res) => {
     return metaCtrl.getCountries(req, res); 
 });
 
-router.post('/property', (req, res) => {
-    return metaCtrl.getPropertyRecord(req, res); 
+router.get('/user/roles', (req, res) => {
+    return metaCtrl.getUserRoles(req, res);
 });
 module.exports = router;

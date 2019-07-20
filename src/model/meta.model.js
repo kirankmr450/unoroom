@@ -21,6 +21,8 @@ exports.allAmenities = () => {
     return exports.buildingAmenities.concat(exports.roomAmenities).sort();
 }
 
+exports.userRoles = ['Admin', 'Property Manager', 'Operator', 'Property Operator'];
+
 exports.locationType = ["BusStand", "RailwayStation", "MetroStation", "Airport", "Beach", "ShoppingMall", "Downtown", "Pubs", "Park", "Temple", "Museum", "University", "Stadium", "Hospital"];
 
 exports.cities = {

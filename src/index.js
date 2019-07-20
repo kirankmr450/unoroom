@@ -4,6 +4,11 @@ var path = require('path');
 var cors = require('cors');
 let mongoose = require('mongoose');
 
+let Error = require('./error/error');
+let authCtrl = require('./controller/auth.controller');
+
+let authRoute = require('./routes/auth');
+let userRoute = require('./routes/user');
 let guestRoute = require('./routes/guest');
 let facilityRoute = require('./routes/facility');
 let occupiedRoomRoute = require('./routes/occupiedroom');
@@ -20,7 +25,27 @@ var app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(authCtrl.initialize());
+app.use('/auth', authRoute);
+// Authentication API (/auth) does not require user authentication
+// Hence they are placed above authentication check.
+app.all('*', (req, res, next) => {
+    return authCtrl.authenticate((err, user, info) => {
+            if (err) return next(err);
+            if (!user) {
+                if (info.name === "TokenExpiredError") {
+                    return res.status(401).json({ message: "Your token has expired. Please generate a new one" });
+                } else {
+                    return res.status(401).json({ message: info.message });
+                }
+            }
+            app.set("user", user);
+            req.user = user;
+            return next();
+        })(req, res, next);
+});
 app.use('/guest', guestRoute);
+app.use('/user', userRoute);
 app.use('/facility', facilityRoute);
 app.use('/occupiedroom', occupiedRoomRoute);
 app.use('/meta', metaRoute);
@@ -34,10 +59,11 @@ app.use((req, res, next) => {
     res.status(404).send('Resource not found');
 });
 
-//Handle for error 500
+//Catch all error
 app.use((err, req, res, next) => {
-    console.log("PRINTING THIS ERRPR", err);
-    res.status(err.status).json(err);
+    console.log("Error at Index.JS: ", JSON.stringify(err));
+    if (!(err instanceof Error)) return res.status(500).json({message: 'Server Error'});
+    res.status(err.code).json(err.response);
 });
 
 const PORT = process.env.PORT || 3000

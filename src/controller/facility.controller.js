@@ -277,7 +277,8 @@ exports.deleteFacility = function(req, res) {
 exports.delistFacility = (req, res) => {
     return FacilityModel.findByIdAndUpdate(
             req.params.facilityid, 
-            {status: FACILITY_STATUS_INACTIVE}
+            {status: FACILITY_STATUS_INACTIVE},
+            {new: true}
     ).then(facility => {
         if (!facility) res.status(404).json({error: 'Facility not found.'});
         res.status(200).json(facility);
