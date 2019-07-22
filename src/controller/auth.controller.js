@@ -68,7 +68,8 @@ exports.login = async (req, res, next) => {
         
         let user = await UserModel.findOne({ "username": req.body.username }).exec();
         if (user === null) throw Error.AuthenticationError('Incorrect credentials');
-
+        // Handle inactive user
+        if (user.active === false) throw Error.ForbiddenError('Account deactivated.'); 
         let success = await user.comparePassword(req.body.password);
         if (success === false) throw Error.AuthenticationError('Incorrect credentials');
         res.status(200).json(genToken(user, user.isNewUser));
