@@ -30,6 +30,10 @@ exports.createFacility = function(req, res) {
     if (MetaModel.isInvalidBuildingType(req.body.buildingtype)) {
         return res.status(400).json({'error': 'Invalid building type'});
     }
+    // Check address and city
+    if (!req.body.address || !req.body.address.city) {
+        return res.status(400).json({message: 'Mandatory field "city" missing'});
+    }
     PropCtrl.getLatestPropertyId(req.body.address.city)
         .then(propertyid => {
             var facilityDoc = new FacilityModel({
@@ -455,7 +459,6 @@ exports.addNearBy = function(req, res) {
         }).then(facility => {
             return res.status(201).send(facility);
         }).catch(err => {
-            console.log(err);
             // Handle scenario when certain parameter type is incorrect.
             if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
             return res.status(500).send(err);
