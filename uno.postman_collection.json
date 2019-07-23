@@ -292,6 +292,11 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjM2NDE4NDYsInVzZXJpZCI6IjVkMzFiYjcxNTUwNTBhMzA3OGVkZTU3NCJ9.GLmbGU3mQY-unSLoOZkwHgK_mhLxTF1vjG41e0kN414",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -1191,6 +1196,69 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get All Building Types",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/meta/buildingtypes",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"meta",
+								"buildingtypes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Roles",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/meta/user/roles",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"meta",
+								"user",
+								"roles"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1730,6 +1798,306 @@
 									"key": "checkoutdate",
 									"value": "2019-05-22"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstname\": \"Neeraj\",\n    \"lastname\": \"Nayan\",\n    \"emailid\": \"ab1c@gmail.com\",\n    \"password\": \"pass\",\n    \"role\": \"Operator\"\n}"
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/user",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjM2MTQyODQsInVzZXJpZCI6IjVkMzI1OGNmNWRlM2E5MjNhOGVhMmUwYSJ9.PfiBAseZmqXQQ6zB-Bs0MplbFYmx7A8LYBtwusyj284",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/user/activate/5d3258cf5de3a923a8ea2e0a",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"user",
+								"activate",
+								"5d3258cf5de3a923a8ea2e0a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User List",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjM2MTQyODQsInVzZXJpZCI6IjVkMzI1OGNmNWRlM2E5MjNhOGVhMmUwYSJ9.PfiBAseZmqXQQ6zB-Bs0MplbFYmx7A8LYBtwusyj284",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/user/",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjM2MTQ1NjEsInVzZXJpZCI6IjVkMzJkYTEwY2MyMDg3NDQ0MGMzNDA1YSJ9.lVwsq0CtDFp5zVtwa__2lqObUoi4Ir9AXMjYgpdYI2g",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/user/5d32db24a4f7c10ef4fe6227",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"user",
+								"5d32db24a4f7c10ef4fe6227"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjM2MTQyODQsInVzZXJpZCI6IjVkMzI1OGNmNWRlM2E5MjNhOGVhMmUwYSJ9.PfiBAseZmqXQQ6zB-Bs0MplbFYmx7A8LYBtwusyj284",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/user/deactivate/5d3258cf5de3a923a8ea2e0a",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"user",
+								"deactivate",
+								"5d3258cf5de3a923a8ea2e0a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjM2NDEyNzgsInVzZXJpZCI6IjVkMzFiYjcxNTUwNTBhMzA3OGVkZTU3NCJ9.IH8DMVFkDTwhqv1OnjuvxLIgdJ9gPCrgWibZ-E9dpl0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstname\": \"Neeraj\",\n    \"lastname\": \"Nayan\",\n    \"emailid\": \"ab1c@gmail.com\",\n    \"password\": \"pass\",\n    \"role\": \"Operator\"\n}"
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/user/5d32da10cc20874440c3405a",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"user",
+								"5d32da10cc20874440c3405a"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"firstname\": \"Neeraj\",\n    \"lastname\": \"Nayan\",\n    \"emailid\": \"abcde1@gmail.com\",\n    \"password\": \"Hello-World\",\n    \"role\": \"operator\"\n}"
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/auth/register",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"Hello-World\"\n}"
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/auth/login",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjM1ODEzMzYsInVzZXJpZCI6IjVkMzI1OGNmNWRlM2E5MjNhOGVhMmUwYSJ9.GP25OVDqT0K2E5SrOKSO2DNk2Uslh3qgFFI9deQ1gxk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"Hello-World\"\n}"
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/auth/resetpassword/5d3258cf5de3a923a8ea2e0a",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"auth",
+								"resetpassword",
+								"5d3258cf5de3a923a8ea2e0a"
 							]
 						}
 					},
