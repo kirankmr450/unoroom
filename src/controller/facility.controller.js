@@ -103,21 +103,21 @@ exports.updateFacility = async (req, res, next) => {
 exports.uploadFacilityImage = async (req, res, next) => {
     try {
         var facilityDoc = await FacilityModel.findOne({_id: req.params.facilityid});
-        if (!facilityDoc) throw { code: 404 };
+        if (!facilityDoc) throw Error.MissingItemError('Facility does not exist.');
 
         var img = {
             category: req.body.category,
             description: req.body.description,
             mimetype: req.file.mimetype,
-            url: ImgUtils.getImageFileUrl(req.params.facilityid, req.file.filename)
+            url: ImgUtils.getFacilityImageFileUrl(req.params.facilityid, req.file.filename)
         };
+        console.log(img);
 
         facilityDoc.images.push(img);
-        facilityDoc = await facility.save();
+        facilityDoc = await facilityDoc.save();
         return res.status(200).send(facilityDoc);
     } catch(e) {
-        if (e.code === 404) return next(Error.MissingItemError('Facility does not exist.'));
-        
+        console.log(e);
         // Handle scenario when certain parameter type is incorrect.
         if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
         return next(e);
@@ -160,7 +160,6 @@ exports.deleteFacilityImage = async (req, res, next) => {
     }
 } // deleteFacilityImage()
 
-
 exports.listFacility = async (req, res, next) => {
     try {
         if (req.params.facilityid) {
@@ -177,7 +176,6 @@ exports.listFacility = async (req, res, next) => {
         return next(e);
     }
 }
-
 
 exports.fetchAllFacilities = (query) => {
     return FacilityModel.find(getFacilityFilter(query))
@@ -383,6 +381,9 @@ exports.deleteRoom = async (req, res, next) => {
         
         facility.rooms = facility.rooms.filter(room => room._id != req.params.roomid);
         facility = await facility.save();
+        
+        // Remove the image file
+        await Utils.removeDir(ImgUtils.getRoomFilePath(req.params.facilityid, req.params.roomid));
         return res.status(200).send(facility);
     } catch (e) {
         // Handle scenario when certain parameter type is incorrect.
@@ -390,6 +391,77 @@ exports.deleteRoom = async (req, res, next) => {
         next(e);
     }
 }
+
+
+// Add image to a room
+exports.uploadRoomImage = async (req, res, next) => {
+    try {
+        // First, look up the facility
+        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        if (!facility) throw Error.MissingItemError('Facility does not exist.');
+
+        var img = {
+            category: req.body.category,
+            description: req.body.description,
+            mimetype: req.file.mimetype,
+            url: ImgUtils.getRoomImageFileUrl(req.params.facilityid, req.params.roomid, req.file.filename)
+        };
+        for (roomIndex in facility.rooms) {
+            if (facility.rooms[roomIndex]._id == req.params.roomid) {
+                facility.rooms[roomIndex].images.push(img);
+                facility = await facility.save();
+                return res.status(200).send(facility);
+            }
+        }
+        throw Error.MissingItemError('Room does not exist.');
+    } catch(e) {
+        // Handle scenario when certain parameter type is incorrect.
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        return next(e);
+    }
+} // uploadRoomImage()
+
+// Get room image
+exports.getRoomImage = async (req, res, next) => {
+    var filepath = ImgUtils.getRoomImageFilePath(req.originalUrl);
+    // Handle inexistent file path
+    if (!filepath || !fs.existsSync(filepath))
+        return next(Error.MissingItemError('File does not exist'));
+    
+    return res.sendFile(resolve(filepath));
+}
+
+// Delete images associated with a room.
+exports.deleteRoomImage = async (req, res, next) => {
+    try {
+        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        if (!facility) throw Error.MissingItemError('Facility does not exist.');
+        
+        for (roomIndex in facility.rooms) {
+            if (facility.rooms[roomIndex]._id == req.params.roomid) {
+                // Remember the image file name to be removed.
+                var img = facility.rooms[roomIndex].images.find(image => image._id == req.params.imageid);
+                if (!img) throw Error.MissingItemError('Image does not exist in said facility.');
+                
+                var filepath = ImgUtils.getRoomImageFilePath(img.url);
+                
+                // Update the facility document
+                facility.rooms[roomIndex].images = facility.rooms[roomIndex].images.filter(image => image._id != req.params.imageid);
+                facility = await facility.save();
+                
+                // Remove the image file
+                await Utils.removeDir(filepath);
+                return res.status(200).send(facility);
+            }
+        }
+        throw Error.MissingItemError('Room does not exist.');
+    } catch(e) {
+        // Handle scenario when certain parameter type is incorrect.
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        return next(e);
+    }
+} // deleteRoomImage()
+
 
 /**
  * Add nearyby entry under a given facility.

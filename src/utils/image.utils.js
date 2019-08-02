@@ -58,14 +58,29 @@ var getFilename = () => {
 }
 
 // Fetch image file url for the entity
-// Where, entity could be facility/room.
-exports.getImageFileUrl = (entityId, imgFileName) => {
-    return API_BASE_URL + entityId + '_' + imgFileName;
+// Where, entity could be facility.
+exports.getFacilityImageFileUrl = (facilityId, imgFileName) => {
+    return API_BASE_URL + facilityId + '_' + imgFileName;
 }
 
 exports.getFacilityImageFilePath = (imgurl) => {
     var files = imgurl.slice(imgurl.lastIndexOf('/') + 1).split('_');
     return BASE_IMG_FOLDER + FACILITY_FOLDER_NAME + files[0] + '/' + files[1];
+}
+
+// Fetch image file url for the entity
+// Where, entity could be room.
+exports.getRoomImageFileUrl = (facilityId, roomId, imgFileName) => {
+    return API_BASE_URL + facilityId + '_' + roomId + '_' + imgFileName;
+}
+
+exports.getRoomFilePath = (facilityId, roomId) => {
+    return BASE_IMG_FOLDER + FACILITY_FOLDER_NAME + facilityId + '/' + roomId;
+}
+
+exports.getRoomImageFilePath = (imgurl) => {
+    var files = imgurl.slice(imgurl.lastIndexOf('/') + 1).split('_');
+    return BASE_IMG_FOLDER + FACILITY_FOLDER_NAME + files[0] + '/' + files[1] + '/' + files[2];
 }
 
 exports.Upload = Multer({storage: storage});

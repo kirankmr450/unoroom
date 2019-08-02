@@ -452,13 +452,19 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DEV_SERVER}}/facility/localities",
+							"raw": "{{DEV_SERVER}}/facility/localities?city=Bangalore",
 							"host": [
 								"{{DEV_SERVER}}"
 							],
 							"path": [
 								"facility",
 								"localities"
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "Bangalore"
+								}
 							]
 						}
 					},
@@ -863,7 +869,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{DEV_SERVER}}/facility/room/image/5d0cd09a9feebb67ec3228a9",
+							"raw": "{{DEV_SERVER}}/facility/room/image/5d43b76c495ce6074cb5811b/5d4424aa89fa664304cc9be1",
 							"host": [
 								"{{DEV_SERVER}}"
 							],
@@ -871,7 +877,8 @@
 								"facility",
 								"room",
 								"image",
-								"5d0cd09a9feebb67ec3228a9"
+								"5d43b76c495ce6074cb5811b",
+								"5d4424aa89fa664304cc9be1"
 							]
 						}
 					},
@@ -893,7 +900,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DEV_SERVER}}/facility/room/image/5d0b5d682579c9410090f0ed/5d0b5ee75e83451398e30993",
+							"raw": "{{DEV_SERVER}}/facility/room/image/5d43b76c495ce6074cb5811b/5d44528f258d2025741662f3",
 							"host": [
 								"{{DEV_SERVER}}"
 							],
@@ -901,8 +908,8 @@
 								"facility",
 								"room",
 								"image",
-								"5d0b5d682579c9410090f0ed",
-								"5d0b5ee75e83451398e30993"
+								"5d43b76c495ce6074cb5811b",
+								"5d44528f258d2025741662f3"
 							]
 						}
 					},
@@ -924,7 +931,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DEV_SERVER}}/facility/room/image/5d0cd09a9feebb67ec3228a9_6697369802972.jpg",
+							"raw": "{{DEV_SERVER}}/facility/room/image/5d43b76c495ce6074cb5811b_5d4424aa89fa664304cc9be1_112442137989199.jpg",
 							"host": [
 								"{{DEV_SERVER}}"
 							],
@@ -932,7 +939,7 @@
 								"facility",
 								"room",
 								"image",
-								"5d0cd09a9feebb67ec3228a9_6697369802972.jpg"
+								"5d43b76c495ce6074cb5811b_5d4424aa89fa664304cc9be1_112442137989199.jpg"
 							]
 						}
 					},
@@ -2054,7 +2061,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"Hello-World\"\n}"
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"secure@123\"\n}"
 						},
 						"url": {
 							"raw": "{{DEV_SERVER}}/auth/login",

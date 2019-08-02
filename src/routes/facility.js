@@ -2,6 +2,7 @@ let express = require('express');
 let router = express.Router();
 let facilityCtrl = require('../controller/facility.controller');
 let ImgCtrl = require('../utils/image.utils');
+let Error = require('../error/error');
 
 /**
  * Facility
@@ -16,7 +17,7 @@ router.post('/', (req, res, next) => {
 //  category: image-category-name
 //  description: image-description
 router.post('/image/:facilityid', ImgCtrl.Upload.single('file'), (req, res, next) => {
-    if (!req.file) return res.status(500).send({error: 'Error creating file'});
+    if (!req.file) return next(Error.ServerError('Error creating file'));
     return facilityCtrl.uploadFacilityImage(req, res, next);
 });
 // Delete an image associated with a facility
@@ -83,9 +84,18 @@ router.post('/room/:facilityid', (req, res, next) => {
 //  file: <image-file>
 //  category: image-category-name
 //  description: image-description
-router.post('/room/image/:facilityid', ImgCtrl.Upload.single('file'), (req, res, next) => {
-    if (!req.file) return res.status(500).send({error: 'Error creating file'});
-    return facilityCtrl.uploadFacilityImage(req, res, next);
+router.post('/room/image/:facilityid/:roomid', ImgCtrl.Upload.single('file'), (req, res, next) => {
+    if (!req.file) return next(Error.ServerError('Error creating file'));
+    return facilityCtrl.uploadRoomImage(req, res, next);
+});
+// Delete an image associated with a room
+// Must specify the image id in the URL path.
+router.delete('/room/image/:facilityid/:roomid/:imageid', (req, res, next) => {
+    return facilityCtrl.deleteRoomImage(req, res, next);
+});
+// Get Room image file
+router.get('/room/image/:filename', (req, res, next) => {
+    return facilityCtrl.getRoomImage(req, res, next); 
 });
 
 // Update room by facility id and room id
