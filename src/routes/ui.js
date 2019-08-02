@@ -3,32 +3,32 @@ let uiCtrl = require('../controller/ui.controller');
 
 let router = express.Router();
 
-router.get('/dashboard/places', (req, res) => {
-    return uiCtrl.getKeyPlaces(req, res);
+router.get('/dashboard/places', (req, res, next) => {
+    return uiCtrl.getKeyPlaces(req, res, next);
 });
 
-router.post('/dashboard/places', (req, res) => {
-    return uiCtrl.addKeyPlace(req, res);
+router.post('/dashboard/places', (req, res, next) => {
+    return uiCtrl.addKeyPlace(req, res, next);
 });
 
-router.put('/dashboard/places/:placeid', (req, res) => {
-   return uiCtrl.updateKeyPlaces(req, res); 
+router.put('/dashboard/places/:placeid', (req, res, next) => {
+   return uiCtrl.updateKeyPlaces(req, res, next); 
 });
 
-router.delete('/dashboard/places/:placeid', (req, res) => {
-    return uiCtrl.deleteKeyPlaces(req, res);
+router.delete('/dashboard/places/:placeid', (req, res, next) => {
+    return uiCtrl.deleteKeyPlaces(req, res, next);
 });
 
-router.get('/dashboard/featuredproperty', (req, res) => {
-    return uiCtrl.getFeaturedProperty(req, res);
+router.get('/dashboard/featuredproperty', (req, res, next) => {
+    return uiCtrl.getFeaturedProperty(req, res, next);
 });
 
-router.put('/dashboard/featuredproperty/:propertyid', (req, res) => {
-    return uiCtrl.addFeaturedProperty(req, res);
+router.put('/dashboard/featuredproperty/:propertyid', (req, res, next) => {
+    return uiCtrl.addFeaturedProperty(req, res, next);
 });
 
-router.delete('/dashboard/featuredproperty/:propertyid', (req, res) => {
-    return uiCtrl.deleteFeaturedProperty(req, res);
+router.delete('/dashboard/featuredproperty/:propertyid', (req, res, next) => {
+    return uiCtrl.deleteFeaturedProperty(req, res, next);
 });
 
 module.exports = router;

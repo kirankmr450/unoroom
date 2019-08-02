@@ -29,21 +29,21 @@ app.use(authCtrl.initialize());
 app.use('/auth', authRoute);
 // Authentication API (/auth) does not require user authentication
 // Hence they are placed above authentication check.
-app.all('*', (req, res, next) => {
-    return authCtrl.authenticate((err, user, info) => {
-            if (err) return next(err);
-            if (!user) {
-                if (info.name === "TokenExpiredError") {
-                    return res.status(401).json({ message: "Your token has expired. Please generate a new one" });
-                } else {
-                    return res.status(401).json({ message: info.message });
-                }
-            }
-            app.set("user", user);
-            req.user = user;
-            return next();
-        })(req, res, next);
-});
+//app.all('*', (req, res, next) => {
+//    return authCtrl.authenticate((err, user, info) => {
+//            if (err) return next(err);
+//            if (!user) {
+//                if (info.name === "TokenExpiredError") {
+//                    return res.status(401).json({ message: "Your token has expired. Please generate a new one" });
+//                } else {
+//                    return res.status(401).json({ message: info.message });
+//                }
+//            }
+//            app.set("user", user);
+//            req.user = user;
+//            return next();
+//        })(req, res, next);
+//});
 app.use('/guest', guestRoute);
 app.use('/user', userRoute);
 app.use('/facility', facilityRoute);

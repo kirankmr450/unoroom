@@ -3,25 +3,26 @@ var PropertyIdModel = require('../model/propertyid.model')
 var MetaModel = require('../model/meta.model')
 const CITY_START_INDEX = 101;
 
-exports.getLatestPropertyId = function (city) {
+exports.getLatestPropertyId = async (city) => {
     var cityPrefix = MetaModel.cityPrefixMap[city];
-    if (!cityPrefix) return Promise.reject(404);
+    if (!cityPrefix) throw Error.MissingItemError('Invalid city');
 
-    return PropertyIdModel.findOne({city: cityPrefix})
-        .then(record => {
-            if (!record) return createNewPropertyRecord(cityPrefix);
-            record.lastindex += 1;
-            return record.save();
-        }).then(record => {
-            return record.city + '-' + record.lastindex;
-        });
+    var propertyRecord = await PropertyIdModel.findOne({city: cityPrefix});
+        
+    if (!propertyRecord) {
+        propertyRecord = await createNewPropertyRecord(cityPrefix);
+    } else {
+        propertyRecord.lastindex += 1;
+        await propertyRecord.save();
+    }
+    return propertyRecord.city + '-' + propertyRecord.lastindex;
 }
 
 // Create new property id record for city
-var createNewPropertyRecord = (city) => {
+var createNewPropertyRecord = async (city) => {
     var cityRecord = new PropertyIdModel({
         city: city,
         lastindex: CITY_START_INDEX
     });
-    return cityRecord.save()
+    return await cityRecord.save();
 }

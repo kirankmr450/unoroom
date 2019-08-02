@@ -6,66 +6,58 @@ var PropCtrl = require('./propertyid.controller');
 var _ = require('lodash/array');
 var Utils = require('../utils/utils');
 var ImgUtils = require('../utils/image.utils');
+var Error = require('../error/error');
 
 const FACILITY_STATUS_ACTIVE = 'active';
 const FACILITY_STATUS_INACTIVE = 'inactive';
 
-
-exports.createFacility = function(req, res) {
-    if (Object.keys(req.body).length === 0) {
-        return res.status(400)
-            .json({'error': 'Request body is missing'});
-    }
-    if (!req.body.name) {
-        return res.status(400)
-            .json({'error': "Mandatory field 'name' missing."})
-    }
-    // Ensure all entries in amenities belong to
-    // meta.model.buildingAmenities
-    if (isInvalidBuildingAmenities(req.body.amenities)) {
-        return res.status(400)
-        .json({'error': 'Invalid amenities in the amenity list'});
-    }
-    // Ensure building type belong to meta.model.buildingTypes
-    if (MetaModel.isInvalidBuildingType(req.body.buildingtype)) {
-        return res.status(400).json({'error': 'Invalid building type'});
-    }
-    // Check address and city
-    if (!req.body.address || !req.body.address.city) {
-        return res.status(400).json({message: 'Mandatory field "city" missing'});
-    }
-    PropCtrl.getLatestPropertyId(req.body.address.city)
-        .then(propertyid => {
-            var facilityDoc = new FacilityModel({
-                facilityid: propertyid,
-                name: req.body.name,
-                description: req.body.description,
-                phonenumber1: req.body.phonenumber1,
-                phonenumber2: req.body.phonenumber2,
-                emailid: req.body.emailid,
-                amenities: _.uniq(req.body.amenities),
-                buildingtype: req.body.buildingtype,
-                rules: req.body.rules,
-                nearby: req.body.nearby,
-                rooms: req.body.rooms,
-                address: req.body.address,
-                status: FACILITY_STATUS_INACTIVE
-            });
-            return facilityDoc.save();
-        }).then(doc => {
-            if (!doc || doc.length === 0) {
-                return res.status(500).json({"error": "Error creating guest."});
-            }
-            return res.status(201).send(doc);
-        }).catch(err => {
-            // Capture error from getLatestPropertyId()
-            if (err === 404) return res.status(404).send({error: 'Invalid city'});
-            // Handle scenario when certain parameter type is incorrect.
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).json(err);
-        });
-}
-
+exports.createFacility = async (req, res, next) => {
+    try {
+        if (Object.keys(req.body).length === 0) 
+            throw Error.UserError('Request body is missing');
+        if (!req.body.name) 
+            throw Error.UserError("Mandatory field 'name' missing.");
+        
+        // Ensure all entries in amenities belong to
+        // meta.model.buildingAmenities
+        if (isInvalidBuildingAmenities(req.body.amenities)) 
+            throw Error.UserError('Invalid amenities in the amenity list');
+        
+        // Ensure building type belong to meta.model.buildingTypes
+        if (MetaModel.isInvalidBuildingType(req.body.buildingtype))
+            throw Error.UserError('Invalid building type');
+        
+        // Check address and city
+        if (!req.body.address || !req.body.address.city)
+            throw Error.UserError('Mandatory field "city" missing');
+        
+        // Fetch propertyid to be assigned to this property
+        var propertyid = await PropCtrl.getLatestPropertyId(req.body.address.city);
+        // Create property in database
+        var facilityDoc = await new FacilityModel({
+            facilityid: propertyid,
+            name: req.body.name,
+            description: req.body.description,
+            phonenumber1: req.body.phonenumber1,
+            phonenumber2: req.body.phonenumber2,
+            emailid: req.body.emailid,
+            amenities: _.uniq(req.body.amenities),
+            buildingtype: req.body.buildingtype,
+            rules: req.body.rules,
+            nearby: req.body.nearby,
+            rooms: req.body.rooms,
+            address: req.body.address,
+            status: FACILITY_STATUS_INACTIVE
+        }).save();
+        if (!facilityDoc || facilityDoc.length === 0) throw Error.ServerError('Error creating guest.');
+        
+        return res.status(201).send(facilityDoc);
+    } catch(e) {
+        // Handle scenario when certain parameter type is incorrect.
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        return next(e);
+    } // catch(e)
+} // createFacility()
 
 var isInvalidBuildingAmenities = (amenities) => {
     var diff = _.difference(amenities, MetaModel.allAmenities());
@@ -73,137 +65,116 @@ var isInvalidBuildingAmenities = (amenities) => {
     return false;
 }
 
-exports.updateFacility = function(req, res) {
-    if (Object.keys(req.body).length === 0) {
-        return res.status(400)
-            .json({"error": 'Request body is missing'});
-    }
-    // If 'name' is provided, it must not be empty string.
-    if (req.body.name !== undefined &&
-        !req.body.name) {
-        return res.status(400)
-            .json({"error": "Mandatory field 'name' cannot be empty."})
-    }
-    // Ensure all entries in amenities belong to
-    // meta.model.buildingAmenities
-    if (isInvalidBuildingAmenities(req.body.amenities)) {
-        return res.status(400)
-        .json({'error': 'Invalid amenities in the amenity list'});
-    }
-    // If buildingtype is provided, ensure building type belong to meta.model.buildingTypes
-    if (req.body.buildingtype !== undefined && MetaModel.isInvalidBuildingType(req.body.buildingtype)) {
-        return res.status(400).json({'error': 'Invalid building type'});
-    }
-    FacilityModel.findOne({_id: req.params.facilityid})
-        .then(facility => {
-            if (!facility) throw { code: 404 };
+exports.updateFacility = async (req, res, next) => {
+    try {
+        if (Object.keys(req.body).length === 0)
+            throw Error.UserError('Request body is missing');
         
-            delete req.body['facilityid'];
-            delete req.body['status'];
-            delete req.body['images'];
-            Object.assign(facility, req.body);
-            return facility.save();
-        }).then(facility => {
-            return res.status(200).send(facility);
-        }).catch(err => {
-            console.log(err);
-            if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
+        // If 'name' is provided, it must not be empty string.
+        if (req.body.name !== undefined && !req.body.name)
+            throw Error.UserError("Mandatory field 'name' cannot be empty.");
         
-            // Handle scenario when certain parameter type is incorrect.
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).send(err);
-        });
-}
+        // Ensure all entries in amenities belong to
+        // meta.model.buildingAmenities
+        if (isInvalidBuildingAmenities(req.body.amenities))
+            throw Error.UserError('Invalid amenities in the amenity list');
+        
+        // If buildingtype is provided, ensure building type belong to meta.model.buildingTypes
+        if (req.body.buildingtype !== undefined && MetaModel.isInvalidBuildingType(req.body.buildingtype))
+            throw Error.UserError('Invalid building type');
+        
+        var facilityDoc = await FacilityModel.findOne({_id: req.params.facilityid});
+        if (!facilityDoc) throw Error.MissingItemError('Facility does not exist.');
+        
+        delete req.body['facilityid'];
+        delete req.body['status'];
+        delete req.body['images'];
+        Object.assign(facilityDoc, req.body);
+        var doc = await facilityDoc.save();
+        return res.status(200).send(doc);
+    } catch (e) {
+        // Handle scenario when certain parameter type is incorrect.
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        return next(e);
+    }
+} // updateFacility()
 
 // Add image to a facility
-exports.uploadFacilityImage = (req, res) => {
-    FacilityModel.findOne({_id: req.params.facilityid})
-        .then(facility => {
-            if (!facility) throw { code: 404 };
+exports.uploadFacilityImage = async (req, res, next) => {
+    try {
+        var facilityDoc = await FacilityModel.findOne({_id: req.params.facilityid});
+        if (!facilityDoc) throw { code: 404 };
+
+        var img = {
+            category: req.body.category,
+            description: req.body.description,
+            mimetype: req.file.mimetype,
+            url: ImgUtils.getImageFileUrl(req.params.facilityid, req.file.filename)
+        };
+
+        facilityDoc.images.push(img);
+        facilityDoc = await facility.save();
+        return res.status(200).send(facilityDoc);
+    } catch(e) {
+        if (e.code === 404) return next(Error.MissingItemError('Facility does not exist.'));
         
-            var img = {
-                category: req.body.category,
-                description: req.body.description,
-                mimetype: req.file.mimetype,
-                url: ImgUtils.getImageFileUrl(req.params.facilityid, req.file.filename)
-            };
-            
-            facility.images.push(img);
-            return facility.save();
-        }).then(facility => {
-            return res.status(200).send(facility);
-        }).catch(err => {
-            console.log(err);
-            if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
-        
-            // Handle scenario when certain parameter type is incorrect.
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).send(err);
-        });
-}
+        // Handle scenario when certain parameter type is incorrect.
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        return next(e);
+    }
+} // uploadFacilityImage()
 
 // Get facility image
-exports.getFacilityImage = (req, res) => {
+exports.getFacilityImage = async (req, res, next) => {
     var filepath = ImgUtils.getFacilityImageFilePath(req.originalUrl);
-    console.log(filepath);
-    
     // Handle inexistent file path
-    if (!filepath || !fs.existsSync(filepath)) {
-        return res.status(404).json({error: 'File does not exist'});
-    }
+    if (!filepath || !fs.existsSync(filepath))
+        return next(Error.MissingItemError('File does not exist'));
+    
     return res.sendFile(resolve(filepath));
 }
 
 // Delete images associated with a facility.
-exports.deleteFacilityImage = (req, res) => {
-    var filepath;
-    
-    FacilityModel.findOne({_id: req.params.facilityid})
-        .then(facility => {
-            if (!facility) throw { code: 404 };
+exports.deleteFacilityImage = async (req, res, next) => {
+    try {
+        var facilityDoc = await FacilityModel.findOne({_id: req.params.facilityid});
+        if (!facilityDoc) throw Error.MissingItemError('Facility does not exist.');
             
-            // Remember the image file name to be removed.
-            var img = facility.images.find(image => image._id == req.params.imageid);
-            if (!img) throw { code: 4041 };
-            filepath = ImgUtils.getFacilityImageFilePath(img.url);
+        // Remember the image file name to be removed.
+        var img = facilityDoc.images.find(image => image._id == req.params.imageid);
+        if (!img) throw Error.MissingItemError('Image does not exist in said facility.');
         
-            // Update the facility document
-            facility.images = facility.images.filter(image => image._id != req.params.imageid);
-            return facility.save();
-        }).then(res => {
-            // Remove the image file
-            return Utils.removeDir(filepath);
-        }).then(facility => {
+        var filepath = ImgUtils.getFacilityImageFilePath(img.url);
+        
+        // Update the facility document
+        facilityDoc.images = facilityDoc.images.filter(image => image._id != req.params.imageid);
+        facilityDoc = await facilityDoc.save();
+        
+        // Remove the image file
+        await Utils.removeDir(filepath);
+        return res.status(200).send(facilityDoc);
+    } catch(e) {
+        // Handle scenario when certain parameter type is incorrect.
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        return next(e);
+    }
+} // deleteFacilityImage()
+
+
+exports.listFacility = async (req, res, next) => {
+    try {
+        if (req.params.facilityid) {
+            var facility = await FacilityModel.findOne({_id: req.params.facilityid}).lean();
+            if (!facility) throw Error.MissingItemError('Facility does not exist.');
             return res.status(200).send(facility);
-        }).catch(err => {
-            console.log(err);
-            if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
-            if (err.code === 4041) return res.status(404).json({'error': 'Image does not exist in said facility.'});
-        
-            // Handle scenario when certain parameter type is incorrect.
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).send(err);
-        });
-}
-
-
-exports.listFacility = function(req, res) {
-    if (req.params.facilityid) {
-        FacilityModel.findOne({_id: req.params.facilityid})
-            .lean()
-            .then(facility => {
-                if (!facility) return res.status(404).json({"error": "Facility does not exist."});
-                return res.status(200).send(facility); 
-            }).catch(err => {
-                if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-                return res.status(500).send({"error": "Server error"});
-            });
-    } else {
-        FacilityModel.find(getFacilityFilter(req.query))
-            .sort({ createdOn: 'desc'})
-            .lean()
-            .then(facilities => res.status(200).send(facilities))
-            .catch(err => res.status(500).send(err));
+        } else {
+            var facilities = await FacilityModel.find(getFacilityFilter(req.query))
+                .sort({ createdOn: 'desc'}).lean();
+            res.status(200).send(facilities);
+        }
+    } catch (e) {
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        return next(e);
     }
 }
 
@@ -265,8 +236,8 @@ var getFacilityFilter = (query) => {
     return qsp;
 }
 
-exports.deleteFacility = function(req, res) {
-    res.status(404).json({error: 'This API is no longer supported. Please invoke delist facility API to delist a property.'});
+exports.deleteFacility = (req, res, next) => {
+    return next(Error.MissingItemError('This API is no longer supported. Please invoke delist facility API to delist a property.'));
 //    FacilityModel.findOneAndRemove({_id: req.params.facilityid})
 //        .then(facility => {
 //            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
@@ -278,37 +249,38 @@ exports.deleteFacility = function(req, res) {
 }
 
 // Delist a facility
-exports.delistFacility = (req, res) => {
-    return FacilityModel.findByIdAndUpdate(
-            req.params.facilityid, 
-            {status: FACILITY_STATUS_INACTIVE},
-            {new: true}
-    ).then(facility => {
-        if (!facility) res.status(404).json({error: 'Facility not found.'});
+exports.delistFacility = async (req, res, next) => {
+    try {
+        var facility = await FacilityModel.findByIdAndUpdate(
+                req.params.facilityid, 
+                {status: FACILITY_STATUS_INACTIVE},
+                {new: true});
+
+        if (!facility) throw Error.MissingItemError('Facility not found.');
         res.status(200).json(facility);
-    }).catch(err => res.status(500).json(err));
-}
+    } catch(e) {
+        next(e);
+    }
+} // delistFacility()
 
 // Publish a facility
-exports.publishFacility = (req, res) => {
-    FacilityModel.findOne({_id: req.params.facilityid})
-        .then(facility => {
-            if (!facility.rooms || facility.rooms.length === 0) throw {code: 403};
-            var roomCount = facility.rooms.reduce((count, room) => count + room.count, 0);
-            if (roomCount === 0) throw {code: 403};
+exports.publishFacility = async (req, res, next) => {
+    try {
+        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        if (!facility) throw Error.MissingItemError('Facility does not exist');
+        if (!facility.rooms || facility.rooms.length === 0)
+            throw Error.ForbiddenError('Facility does not have rooms. It cannot be published.');
         
-            facility.status = FACILITY_STATUS_ACTIVE;
-            return facility.save();
-        })
-        .then(facility => res.status(200).send(facility))
-        .catch(err => {
-            if (err.code === 403) {
-                return res.status(403).json({error: 'Facility does not have rooms. It cannot be published.'})
-            } else {
-                return res.status(500).send(err);
-            }
-        });
-}
+        var roomCount = facility.rooms.reduce((count, room) => count + room.count, 0);
+        if (roomCount === 0) throw Error.ForbiddenError('Facility does not have rooms. It cannot be published.');
+        
+        facility.status = FACILITY_STATUS_ACTIVE;
+        facility = await facility.save();
+        res.status(200).send(facility);
+    } catch(e) {
+        next(e);
+    }
+} // publishFacility()
 
 
 exports.checkIfRoomExist = function(facilityId, bookedRooms) {
@@ -335,77 +307,65 @@ exports.checkIfRoomExist = function(facilityId, bookedRooms) {
 }
 
 
-exports.createRoom = function(req, res) {
-    if (Object.keys(req.body).length === 0) {
-        return res.status(400)
-            .json({"error": "Request body is missing"});
-    }
-    // Ensure all entries in amenities belong to
-    // meta.model.roomAmenities
-    if (isInvalidRoomAmenities(req.body.amenities)) {
-        return res.status(400)
-        .json({'error': 'Invalid amenities in the amenity list'});
-    }
-    // Ensure room type belong to meta.model.roomTypes
-    if (MetaModel.isInvalidRoomType(req.body.type)) {
-        return res.status(400).json({'error': 'Invalid room type'});
-    }
-    FacilityModel.findOne({_id: req.params.facilityid})
-        .then(facility => {
-            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
+exports.createRoom = async (req, res, next) => {
+    try {
+        if (Object.keys(req.body).length === 0) throw Error.UserError('Request body is missing');
         
-            facility.rooms.push(req.body);
-            return facility.save();
-        }).then(facility => {
-            return res.status(201).send(facility);
-        }).catch(err => {
-            console.log(err);
-            // Handle scenario when certain parameter type is incorrect.
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).send(err);
-        });
+        // Ensure all entries in amenities belong to
+        // meta.model.roomAmenities
+        if (isInvalidRoomAmenities(req.body.amenities)) 
+            throw Error.UserError('Invalid amenities in the amenity list');
+        
+        // Ensure room type belong to meta.model.roomTypes
+        if (MetaModel.isInvalidRoomType(req.body.type)) 
+            throw Error.UserError('Invalid room type');
+        
+        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        if (!facility) throw Error.MissingItemError('Facility does not exist.');
+        
+        facility.rooms.push(req.body);
+        facility = await facility.save();
+        return res.status(201).send(facility);
+    } catch (e) {
+        // Handle scenario when certain parameter type is incorrect.
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        return next(e);
+    }
 }
 
-exports.updateRoom = function(req, res) {
-    if (Object.keys(req.body).length === 0) {
-        return res.status(400)
-            .json({"error": "Request body is missing"});
-    }
-    // Ensure all entries in amenities belong to
-    // meta.model.roomAmenities
-    if (isInvalidRoomAmenities(req.body.amenities)) {
-        return res.status(400)
-        .json({'error': 'Invalid amenities in the amenity list'});
-    }
-    // If room type is provided, ensure room type belong to meta.model.roomTypes
-    if (req.body.type !== undefined && MetaModel.isInvalidRoomType(req.body.type)) {
-        return res.status(400).json({'error': 'Invalid room type'});
-    }
-    // First, look up the facility
-    FacilityModel.findOne({_id: req.params.facilityid})
-        .then(facility => {
-            if (!facility) throw { code: 404 };
-        
-            for (roomIndex in facility.rooms) {
-                if (facility.rooms[roomIndex]._id == req.params.roomid) {
-                    Object.assign(facility.rooms[roomIndex], req.body);
-                    return facility.save();        
-                }
-            }
-            
-            throw { code: 4041 };
-        }).then(facility => {
-            return res.status(200).send(facility);
-        }).catch(err => {
-            console.log(err);
-            if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
-            if (err.code === 4041) return res.status(404).json({'error': 'Room does not exist.'});
+exports.updateRoom = async (req, res, next) => {
+    try {
+        if (Object.keys(req.body).length === 0)
+            throw Error.UserError('Request body is missing');
     
-            // Handle scenario when certain parameter type is incorrect.
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).send(err);
-        });
-}
+        // Ensure all entries in amenities belong to
+        // meta.model.roomAmenities
+        if (isInvalidRoomAmenities(req.body.amenities))
+            throw Error.UserError('Invalid amenities in the amenity list');
+            
+        // If room type is provided, ensure room type belong to meta.model.roomTypes
+        if (req.body.type !== undefined && MetaModel.isInvalidRoomType(req.body.type))
+            throw Error.UserError('Invalid room type');
+        
+        // First, look up the facility
+        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        if (!facility) throw Error.MissingItemError('Facility does not exist.');
+
+        for (roomIndex in facility.rooms) {
+            if (facility.rooms[roomIndex]._id == req.params.roomid) {
+                Object.assign(facility.rooms[roomIndex], req.body);
+                facility = await facility.save();
+                return res.status(200).send(facility);
+            }
+        }
+        throw Error.MissingItemError('Room does not exist.');
+    } catch (e) {
+        // Handle scenario when certain parameter type is incorrect.
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        return next(e);
+    }
+} // updateRoom()
+
 
 var isInvalidRoomAmenities = (amenities) => {
     var diff = _.difference(amenities, MetaModel.roomAmenities);
@@ -416,95 +376,76 @@ var isInvalidRoomAmenities = (amenities) => {
 /**
  * Delete room under a given facility.
  */
-exports.deleteRoom = function(req, res) {
-    FacilityModel.findOne({_id: req.params.facilityid})
-        .then(facility => {
-            if (!facility) throw {code: 404};
+exports.deleteRoom = async (req, res, next) => {
+    try {
+        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        if (!facility) throw Error.MissingItemError('Facility does not exist.');
         
-            facility.rooms = facility.rooms.filter(room => room._id != req.params.roomid);
-            return facility.save();
-        }).then(facility => {
-            return res.status(200).send(facility);
-        }).catch(err => {
-            console.log(err);
-        
-            if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
-        
-            // Handle scenario when certain parameter type is incorrect.
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).send(err);
-        });
+        facility.rooms = facility.rooms.filter(room => room._id != req.params.roomid);
+        facility = await facility.save();
+        return res.status(200).send(facility);
+    } catch (e) {
+        // Handle scenario when certain parameter type is incorrect.
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        next(e);
+    }
 }
 
 /**
  * Add nearyby entry under a given facility.
  */
-exports.addNearBy = function(req, res) {
-    if (Object.keys(req.body).length === 0) {
-        return res.status(400)
-            .json({"error": "Request body is missing"});
-    }
-    // Ensure nearby type belong to
-    // meta.model.locationType
-    if (isInvalidNearByType(req.body.locationtype)) {
-        return res.status(400)
-        .json({'error': 'Invalid location type.'});
-    }
-    FacilityModel.findOne({_id: req.params.facilityid})
-        .then(facility => {
-            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
+exports.addNearBy = async (req, res, next) => {
+    try {
+        if (Object.keys(req.body).length === 0) throw Error.UserError('Request body is missing');
+    
+        // Ensure nearby type belong to
+        // meta.model.locationType
+        if (isInvalidNearByType(req.body.locationtype))
+            throw Error.UserError('Invalid location type.');
         
-            facility.nearby.push(req.body);
-            return facility.save();
-        }).then(facility => {
-            return res.status(201).send(facility);
-        }).catch(err => {
-            // Handle scenario when certain parameter type is incorrect.
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).send(err);
-        });
+        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        if (!facility) throw Error.MissingItemError('Facility does not exist.');
+        
+        facility.nearby.push(req.body);
+        facility = await facility.save();
+        return res.status(201).send(facility);
+    } catch (e) {
+        // Handle scenario when certain parameter type is incorrect.
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        next(e);
+    }
 }
 
 /**
  * Update nearby entry under a given facility
  */
-exports.updateNearBy = function(req, res) {
-    if (Object.keys(req.body).length === 0) {
-        return res.status(400)
-            .json({"error": "Request body is missing"});
-    }
-    
-    // if locationType is provided, ensure nearby type belong to
-    // meta.model.locationType
-    if (req.body.locationtype !== undefined && isInvalidNearByType(req.body.locationtype)) {
-        return res.status(400)
-        .json({'error': 'Invalid location type.'});
-    }
-    
-    // First, look up the facility
-    FacilityModel.findOne({_id: req.params.facilityid})
-        .then(facility => {
-            if (!facility) throw { code: 404 };
+exports.updateNearBy = async (req, res, next) => {
+    try {
+        if (Object.keys(req.body).length === 0) throw Error.UserError('Request body is missing');
         
-            for (nearbyIndex in facility.nearby) {
-                if (facility.nearby[nearbyIndex]._id == req.params.nearbyid) {
-                    Object.assign(facility.nearby[nearbyIndex], req.body);
-                    return facility.save();        
-                }
-            }
-            
-            throw { code: 4041 };
-        }).then(facility => {
-            return res.status(200).send(facility);
-        }).catch(err => {
-            console.log(err);
-            if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
-            if (err.code === 4041) return res.status(404).json({'error': 'Nearby entry does not exist.'});
+        // if locationType is provided, ensure nearby type belong to
+        // meta.model.locationType
+        if (req.body.locationtype !== undefined && isInvalidNearByType(req.body.locationtype))
+            throw Error.UserError('Invalid location type.');
     
-            // Handle scenario when certain parameter type is incorrect.
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).send(err);
-        });
+        // First, look up the facility
+        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        if (!facility) throw Error.MissingItemError('Facility does not exist.');
+
+        for (nearbyIndex in facility.nearby) {
+            if (facility.nearby[nearbyIndex]._id == req.params.nearbyid) {
+                Object.assign(facility.nearby[nearbyIndex], req.body);
+                facility = await facility.save();
+                return res.status(200).send(facility);
+            }
+        }
+
+        throw Error.MissingItemError('Nearby entry does not exist.');
+    } catch (e) {
+        // Handle scenario when certain parameter type is incorrect.
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        next(e);
+    }
 }
 
 
@@ -517,54 +458,44 @@ var isInvalidNearByType = (type) => {
  * Returns 404, if facility does not exist.
  * Returns Success, if nearby does not exist under the facility.
  */
-exports.deleteNearBy = function(req, res) {
-    FacilityModel.findOne({_id: req.params.facilityid})
-        .then(facility => {
-            if (!facility) throw {code: 404};
+exports.deleteNearBy = async (req, res, next) => {
+    try {
+        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        if (!facility) throw Error.MissingItemError('Facility does not exist.');
         
-            facility.nearby = facility.nearby.filter(nearby => nearby._id != req.params.nearbyid);
-            return facility.save();
-        }).then(facility => {
-            return res.status(200).send(facility);
-        }).catch(err => {
-            console.log(err);
-        
-            if (err.code === 404) return res.status(404).json({'error': 'Facility does not exist.'});
-        
-            // Handle scenario when certain parameter type is incorrect.
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).send(err);
-        });
+        facility.nearby = facility.nearby.filter(nearby => nearby._id != req.params.nearbyid);
+        facility = await facility.save();
+        return res.status(200).send(facility);
+    } catch (e) {
+        // Handle scenario when certain parameter type is incorrect.
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        return next(e);
+    }
 }
 
 /**
  * Returns unique cities where properties are available
  */
-exports.getUniqueCities = function(req, res) {
-    FacilityModel.find({}, 'address.city')
-        .distinct('address.city')
-        .then(records => {
-            return res.status(200).json(records.sort());
-        }).catch(err => {
-            console.log(err);
-            return res.status(500).send(err);
-        });
+exports.getUniqueCities = async (req, res, next) => {
+    try {
+        var records = await FacilityModel.find({}, 'address.city').distinct('address.city');
+        return res.status(200).json(records.sort());
+    } catch (e) {
+        next(e);
+    }
 }
 
 /**
  * Returns unique localities for a given city where properties are located
  */
-exports.getUniqueLocalities = function(req, res) {
-    console.log(req.query.city);
-    FacilityModel.find({'address.city':req.query.city}, 'address.locality')
-        .distinct('address.locality')
-        .then(records => {
-        console.log(records);
-            return res.status(200).json(records.sort());
-        }).catch(err => {
-            console.log(err);
-            return res.status(500).send(err);
-        });
+exports.getUniqueLocalities = async (req, res, next) => {
+    try {
+        var records = await FacilityModel.find({'address.city':req.query.city}, 'address.locality')
+                        .distinct('address.locality');
+        return res.status(200).json(records.sort());
+    } catch (e) {
+        next(e);
+    }
 }
 
 

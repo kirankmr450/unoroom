@@ -8,14 +8,13 @@ Installing a module in node
 // The module gets intalled locally and dev dependencies is updated in package.json.
 
 UnoRoom Server
---------------
+----------------------------
 1513464289/India123
 - MONGO-DB
 cd /d/uno/unoroom/mongodb/
 /c/Program\ Files/MongoDB/Server/4.0/bin/mongod.exe --dbpath .
 - HTTP Server
 npm run start-watch
-
 
 UnoRooms
 --------------
@@ -24,6 +23,36 @@ Command Line:
 - Run app: npm run start-watch
 - Run Mongo Server: "C:\Program Files\MongoDB\Server\4.0\bin\mongod.exe" --dbpath "C:\Users\neeraj.nayan\Documents\Projects\Others\uno\mongodb"
 - Run Mongo command line: "C:\Program Files\MongoDB\Server\4.0\bin\mongo"
+
+TODO
+-----------------------------------------------
+Steamline error handling at server side
+Make Node Server Running Forever and Self Recoverable - Done
+	https://techprd.com/setup-node-js-web-server-on-amazon-ec2/
+	https://stackoverflow.com/questions/26245942/how-do-i-leave-node-js-server-on-ec2-running-forever
+	https://anil.io/blog/aws/setup-ec2-nodejs-forever/
+		forever start src/index.js
+		forever list
+		forever stopall
+		forever logs
+Make MongoDB Secure - Done
+	https://stackoverflow.com/questions/4881208/how-to-secure-mongodb-with-username-and-password
+	https://docs.mongodb.com/manual/tutorial/enable-authentication/
+Logging at server side
+Room Image API
+Implement Image Thumbnail for Room 
+Store images in S3 and provide S3 URL
+Implement MongoDB backup and restore
+	https://www.digitalocean.com/community/tutorials/how-to-back-up-restore-and-migrate-a-mongodb-database-on-ubuntu-14-04
+	https://www.digitalocean.com/community/tutorials/how-to-import-and-export-a-mongodb-database-on-ubuntu-14-04
+	https://www.digitalocean.com/community/tutorials/how-to-set-up-a-scalable-mongodb-database
+Implement ELB for both mongoDB and API server
+Check MockTest code and implement best practices
+Streamline documentation - Both files
+-------------------------------------------------
+
+
+
 
 DB Model
 https://dba.stackexchange.com/questions/125162/database-design-of-room-booking-system-in-a-hotel

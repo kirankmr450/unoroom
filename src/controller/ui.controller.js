@@ -3,165 +3,143 @@ var UiModel = require('../model/ui.model');
 var FacilityModel = require('../model/facility.model');
 var _ = require('lodash/array');
 
-exports.getKeyPlaces = function(req, res) {
-    UiModel.findOne()
-        .lean()
-        .exec()
-        .then(response => {
-             if (!response ||
-                 !response.keyplaces ||
-                 !response.keyplaces.length === 0) {
-                 return res.status(200).json([]);
-             }
-             return res.status(200).json(response.keyplaces);
-        }).catch(err => {
-            return res.status(500).send({'error': 'Server error'}); 
-        });
+exports.getKeyPlaces = async (req, res, next) => {
+    try {
+        var response = await UiModel.findOne().lean().exec();
+        if (!response ||
+            !response.keyplaces ||
+            !response.keyplaces.length === 0) {
+             return res.status(200).json([]);
+         }
+        return res.status(200).json(response.keyplaces);
+    } catch (e) {
+        next(e);
+    }
 }
 
-exports.addKeyPlace = function(req, res) {
-    if (Object.keys(req.body).length === 0) {
-        return res.status(400)
-            .json({"error": "Request body is missing"});
-    }
-    if (!req.body.cityname) {
-        return res.status(400)
-            .json({"error": "Mandatory field 'cityname' missing."})
-    }
-    UiModel.findOne()
-        .then(uiContentDocument => {
-            if (!uiContentDocument) {
-                uiContentDocument = new UiModel({
-                    keyplaces: [],
-                    featuredproperty: []
-                });
-            }
-            uiContentDocument.keyplaces.push(req.body);
-            return uiContentDocument.save();
-        }).then(uiContentDocument => {
-            return res.status(200).send("Place added.");
-        }).catch(err => {
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).json(err);
-        });
-}
-
-exports.updateKeyPlaces = function(req, res) {
-    if (Object.keys(req.body).length === 0) {
-        return res.status(400)
-            .json({"error": "Request body is missing"});
-    }
-    // If 'cityname' is provided, it must not be empty string.
-    if (req.body.cityname !== undefined  &&
-        !req.body.cityname) {
-        return res.status(400)
-            .json({"error": "Mandatory field 'cityname' cannot be empty."})
-    }
-    UiModel.findOne()
-        .then(uiContentDocument => {
-            if (!uiContentDocument ||
-               !uiContentDocument.keyplaces ||
-               uiContentDocument.keyplaces.length === 0) {
-                throw { code: 404 };   
-            }
-            if (placeIndex in uiContentDocument.keyplaces) {
-                console.log(uiContentDocument.keyplaces[placeIndex]._id);
-                if (uiContentDocument.keyplaces[placeIndex]._id == req.params.placeid) {
-                    Object.assign(uiContentDocument.keyplaces[placeIndex], req.body);
-                    return uiContentDocument.save();
-                }
-            }
-            throw { code: 404 };
-        }).then(uiContentDocument => {
-            return res.status(200).send('Place removed.');
-        }).catch(err => {
-            if (err.code === 404) return res.status(404).send('Place does not exist.');
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).json(err);
-        });
-}
-
-exports.deleteKeyPlaces = function(req, res) {
-    UiModel.findOne()
-        .then(uiContentDocument => {
-            if (!uiContentDocument ||
-               !uiContentDocument.keyplaces ||
-               uiContentDocument.keyplaces.length === 0) {
-                throw { code: 200 };   
-            }
-            
-            uiContentDocument.keyplaces = uiContentDocument.keyplaces.filter(place => place._id != req.params.placeid);
-
-            return uiContentDocument.save();
-        }).then(uiContentDocument => {
-            return res.status(200).send('Place removed.');
-        }).catch(err => {
-            if (err.code === 200) return res.status(200).send('Place removed.');
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).json(err);
-        });
-}
-
-exports.getFeaturedProperty = function(req, res) {
-    UiModel.findOne({}, 'featuredproperty')
-        .exec()
-        .then(response => {
-            // If no featured property, return empty array.
-            if (!response ||
-                !response.featuredproperty ||
-                response.featuredproperty.length == 0) {
-                throw { code: 200 };
-            }
+exports.addKeyPlace = async (req, res, next) => {
+    try {
+        if (Object.keys(req.body).length === 0) throw Error.UserError('Request body is missing');
+        if (!req.body.cityname) throw Error.UserError("Mandatory field 'cityname' missing.");
         
-            return FacilityModel
-                .find({_id: {$in: response.featuredproperty}}, 'facilityid name buildingtype roomtypes status address images amenities nearby')
-                .sort({createdOn: 'desc'})
-                .lean()
-                .exec();
-        }).then(facilities => {
-            return res.status(200).send(facilities);
-        }).catch(err => {
-            if (err.code === 200) return res.status(200).json([]);
-            return res.status(500).send({"error": "Server error"});
-        });
+        var uiContentDocument = await UiModel.findOne();
+        if (!uiContentDocument) {
+            uiContentDocument = new UiModel({
+                keyplaces: [],
+                featuredproperty: []
+            });
+        }
+        uiContentDocument.keyplaces.push(req.body);
+        uiContentDocument = await uiContentDocument.save();
+        return res.status(200).json({'message': 'Place added'});
+    } catch (e) {
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        next(e);
+    }
 }
 
-exports.addFeaturedProperty = function(req, res) {
-    UiModel.findOne()
-        .then(uiContentDocument => {
-            if (!uiContentDocument) {
-                uiContentDocument = new UiModel({
-                    keyplaces: [],
-                    featuredproperty: [mongoose.Types.ObjectId(req.params.propertyid)]
-                });
-            } else {
-                uiContentDocument.featuredproperty = _.union(uiContentDocument.featuredproperty, [mongoose.Types.ObjectId(req.params.propertyid)]);
-            }
-            return uiContentDocument.save();
-        }).then(uiContentDocument => {
-            return res.status(200).send("Property marked as featured.");
-        }).catch(err => {
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).json(err);
-        });
-}
-
-exports.deleteFeaturedProperty = function(req, res) {
-    UiModel.findOne()
-        .then(uiContentDocument => {
-            if (!uiContentDocument || 
-                !uiContentDocument.featuredproperty ||
-                uiContentDocument.featuredproperty.length == 0) throw { code: 200 };
+exports.updateKeyPlaces = async (req, res, next) => {
+    try {
+        if (Object.keys(req.body).length === 0) throw Error.UserError('Request body is missing');
         
-            uiContentDocument.featuredproperty = uiContentDocument.featuredproperty.filter(id => id != req.params.propertyid);
+        // If 'cityname' is provided, it must not be empty string.
+        if (req.body.cityname !== undefined  &&
+            !req.body.cityname) throw Error.UserError("Mandatory field 'cityname' cannot be empty.");
+        
+        var uiContentDocument = await UiModel.findOne();
+        if (!uiContentDocument ||
+           !uiContentDocument.keyplaces ||
+           uiContentDocument.keyplaces.length === 0) {
+            throw Error.MissingItemError('Place does not exist.');
+        }
+        
+        if (placeIndex in uiContentDocument.keyplaces) {
+            if (uiContentDocument.keyplaces[placeIndex]._id == req.params.placeid) {
+                Object.assign(uiContentDocument.keyplaces[placeIndex], req.body);
+                uiContentDocument = await uiContentDocument.save();
+                return res.status(200).json({'message': 'Place removed.'});
+            }
+        }
+        throw Error.MissingItemError('Place does not exist.');
+    } catch (e) {
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        next(e);
+    }
+}
 
-            return uiContentDocument.save();
-        }).then(uiContentDocument => {
-            return res.status(200).send('Property unmarked as featured.');
-        }).catch(err => {
-            if (err.code === 200) return res.status(200).send('Property unmarked as featured.');
-            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
-            return res.status(500).json(err);
-        });
+exports.deleteKeyPlaces = async(req, res, next) => {
+    try {
+        var uiContentDocument = await UiModel.findOne();
+        if (!uiContentDocument ||
+            !uiContentDocument.keyplaces ||
+            uiContentDocument.keyplaces.length === 0) {
+            return res.status(200).json({'message': 'Place removed.'});
+        }
+        uiContentDocument.keyplaces = uiContentDocument.keyplaces.filter(place => place._id != req.params.placeid);
+        uiContentDocument = await uiContentDocument.save();
+        return res.status(200).json({'message': 'Place removed.'});
+    } catch (e) {
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        next(e);
+    }
+}
+
+exports.getFeaturedProperty = async(req, res, next) => {
+    try {
+        var response = await UiModel.findOne({}, 'featuredproperty').exec();
+        // If no featured property, return empty array.
+        if (!response ||
+            !response.featuredproperty ||
+            response.featuredproperty.length == 0) {
+            return res.status(200).json([]);
+        }
+
+        var facilities = await FacilityModel
+            .find({_id: {$in: response.featuredproperty}}, 'facilityid name buildingtype roomtypes status address images amenities nearby')
+            .sort({createdOn: 'desc'})
+            .lean()
+            .exec();
+        return res.status(200).send(facilities);
+    } catch (e) {
+        next(e);
+    }
+}
+
+exports.addFeaturedProperty = async(req, res, next) => {
+    try {
+        var uiContentDocument = await UiModel.findOne();
+        if (!uiContentDocument) {
+            uiContentDocument = new UiModel({
+                keyplaces: [],
+                featuredproperty: [mongoose.Types.ObjectId(req.params.propertyid)]
+            });
+        } else {
+            uiContentDocument.featuredproperty = _.union(uiContentDocument.featuredproperty, [mongoose.Types.ObjectId(req.params.propertyid)]);
+        }
+        uiContentDocument = await uiContentDocument.save();
+        return res.status(200).json({'message': 'Property marked as featured.'});
+    } catch (e) {
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        next(e);
+    }
+}
+
+exports.deleteFeaturedProperty = async (req, res, next) => {
+    try {
+        var uiContentDocument = await UiModel.findOne();
+        if (!uiContentDocument || 
+            !uiContentDocument.featuredproperty ||
+            uiContentDocument.featuredproperty.length == 0) {
+            return res.status(200).json({'message': 'Property un-marked as featured.'});
+        }
+
+        uiContentDocument.featuredproperty = uiContentDocument.featuredproperty.filter(id => id != req.params.propertyid);
+
+        uiContentDocument = await uiContentDocument.save();
+        return res.status(200).json({'message': 'Property un-marked as featured.'});
+    } catch (e) {
+        if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
+        next(e);
+    }
 }
 
