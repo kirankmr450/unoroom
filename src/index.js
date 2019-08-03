@@ -18,7 +18,12 @@ let utilsRoute = require('./routes/utils');
 let reservationRoute = require('./routes/reservation');
 let searchRoute = require('./routes/search');
 
-mongoose.connect('mongodb://localhost:27017/unorooms', {useNewUrlParser: true});
+//mongoose.connect('mongodb://ec2-35-154-148-140.ap-south-1.compute.amazonaws.com:27017/unorooms', {useNewUrlParser: true});
+//mongoose.connect('mongodb://52.66.241.16:27017/unorooms', {useNewUrlParser: true});
+
+// DB Credentials are: admin/dbAdmin@123
+mongoose.connect('mongodb://ec2-52-66-241-16.ap-south-1.compute.amazonaws.com:27017/unorooms?authSource=admin', 
+  {user: 'admin', pass: 'dbAdmin@123', useNewUrlParser: true});
 
 var app = express();
 // TODO: Configure this properly when domain name is registered.
@@ -29,7 +34,7 @@ app.use(authCtrl.initialize());
 app.use('/auth', authRoute);
 // Authentication API (/auth) does not require user authentication
 // Hence they are placed above authentication check.
-app.all('*', (req, res, next) => {
+/*app.all('*', (req, res, next) => {
     return authCtrl.authenticate((err, user, info) => {
             if (err) return next(err);
             if (!user) {
@@ -43,7 +48,7 @@ app.all('*', (req, res, next) => {
             req.user = user;
             return next();
         })(req, res, next);
-});
+});*/
 app.use('/guest', guestRoute);
 app.use('/user', userRoute);
 app.use('/facility', facilityRoute);
@@ -66,5 +71,5 @@ app.use((err, req, res, next) => {
     res.status(err.code).json(err.response);
 });
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 8080
 app.listen(PORT, () => console.info(`Server listening on port ${PORT}.`));
