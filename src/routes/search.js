@@ -12,4 +12,14 @@ router.get('/facility/:facilityid', (req, res) => {
    return searchCtrl.searchFacility(req, res); 
 });
 
+// Search all hotels - Without any reservations
+router.get('/hotels', (req, res, next) => {
+    return searchCtrl.searchAllHotels(req, res, next);
+});
+
+// Search all service apartments - Without any reservations
+router.get('/apartments', (req, res, next) => {
+    return searchCtrl.searchAllApartments(req, res, next);
+});
+
 module.exports = router;

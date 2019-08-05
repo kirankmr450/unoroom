@@ -3,8 +3,8 @@ let metaCtrl = require('../controller/meta.controller');
 
 let router = express.Router();
 
-router.get('/roomtypes', (req, res) => {
-   return metaCtrl.getRoomTypes(req, res); 
+router.get('/roomtypes', (req, res, next) => {
+   return metaCtrl.getRoomTypes(req, res, next); 
 });
 
 router.get('/buildingtypes', (req, res) => {

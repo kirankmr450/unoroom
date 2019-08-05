@@ -1,7 +1,13 @@
 var MetaModel = require('../model/meta.model');
+var Error = require('../error/error');
 
-exports.getRoomTypes = function(req, res) {
-    return res.status(200).json(MetaModel.roomTypes);
+exports.getRoomTypes = function(req, res, next) {
+    var buildingType = req.query.buildingtype;
+    if (MetaModel.isInvalidBuildingType(buildingType)) {
+        next(Error.UserError('Invalid building type'));
+        return;
+    }
+    return res.status(200).json(MetaModel.roomTypes[buildingType]);
 }
 
 exports.getBuildingTypes = function(req, res) {

@@ -189,6 +189,12 @@ exports.fetchFacilityById = (facilityid) => {
 var getFacilityFilter = (query) => {
     // Individual QSP fields are 'AND'ed
     var qsp = {};
+    
+    // QSP: buildingtype=Hotel/ServiceApartment
+    if (query.buildingtype && typeof query.buildingtype === 'string') {
+        Object.assign(qsp, {'buildingtype': query.buildingtype});
+    }
+    
     // QSP: name=<facility-name>/<facilityid>
     if (query.name && typeof query.name === 'string') {
         Object.assign(qsp, {$text: {$search: query.name, $caseSensitive: false}});
@@ -314,12 +320,12 @@ exports.createRoom = async (req, res, next) => {
         if (isInvalidRoomAmenities(req.body.amenities)) 
             throw Error.UserError('Invalid amenities in the amenity list');
         
-        // Ensure room type belong to meta.model.roomTypes
-        if (MetaModel.isInvalidRoomType(req.body.type)) 
-            throw Error.UserError('Invalid room type');
-        
         var facility = await FacilityModel.findOne({_id: req.params.facilityid});
         if (!facility) throw Error.MissingItemError('Facility does not exist.');
+        
+        // Ensure room type belong to meta.model.roomTypes
+        if (MetaModel.isInvalidRoomType(facility.buildingtype, req.body.type)) 
+            throw Error.UserError('Invalid room type');
         
         facility.rooms.push(req.body);
         facility = await facility.save();

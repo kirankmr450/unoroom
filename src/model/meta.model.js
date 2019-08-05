@@ -1,11 +1,13 @@
 /**
  * Room Type
  */
-var roomTypes = ["SingleBedRoom", "DoubleBedRoom", "OneBHKApartment", "TwoBHKApartment", "ThreeBHKApartment"];
+var roomTypes = {'Hotel': ['SingleBedRoom', 'DoubleBedRoom'],
+                 'ServiceApartment': ['OneBHKApartment', 'TwoBHKApartment', 'ThreeBHKApartment']
+                };
 
 exports.roomTypes = roomTypes;
-exports.isInvalidRoomType = (roomType) => {
-    return ((roomTypes.indexOf(roomType)) === -1);
+exports.isInvalidRoomType = (buildingType, roomType) => {
+    return ((roomTypes[buildingType].indexOf(roomType)) === -1);
 }
 
 exports.buildingTypes = ['Hotel', 'ServiceApartment'];
@@ -22,6 +24,8 @@ exports.allAmenities = () => {
 }
 
 exports.userRoles = ['Admin', 'Property Manager', 'Operator', 'Property Operator'];
+exports.userRoles.Root = 'Root';
+exports.userRoles.Admin = 'Admin';
 
 exports.locationType = ["BusStand", "RailwayStation", "MetroStation", "Airport", "Beach", "ShoppingMall", "Downtown", "Pubs", "Park", "Temple", "Museum", "University", "Stadium", "Hospital"];
 

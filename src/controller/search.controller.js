@@ -1,6 +1,38 @@
 var RsvController = require('./reservation.controller');
 var FacilityController = require('./facility.controller');
 
+// Search all hotels
+exports.searchAllHotels = async (req, res, next) => {
+    try {
+        var hotels = await FacilityController.fetchAllFacilities({
+            buildingtype: 'Hotel',
+            city: req.query.city,
+            amenities: req.query.amenities,
+            roomtype: req.query.roomtype,
+            isActive: true
+        });
+        res.status(200).send(hotels);
+    } catch (e) {
+        next(e);
+    }
+}
+
+// Search all service apartments
+exports.searchAllApartments = async (req, res, next) => {
+    try {
+        var serviceApartments = await FacilityController.fetchAllFacilities({
+            buildingtype: 'ServiceApartment',
+            city: req.query.city,
+            amenities: req.query.amenities,
+            roomtype: req.query.roomtype,
+            isActive: true
+        });
+        res.status(200).send(serviceApartments);
+    } catch (e) {
+        next(e);
+    }
+}
+
 // Get all available facilites for a given duration
 // QSP Supported:
 //   city=<comma-separated-cities> (bangalore,ahmedabad)

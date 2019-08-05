@@ -29,21 +29,21 @@ app.use(authCtrl.initialize());
 app.use('/auth', authRoute);
 // Authentication API (/auth) does not require user authentication
 // Hence they are placed above authentication check.
-//app.all('*', (req, res, next) => {
-//    return authCtrl.authenticate((err, user, info) => {
-//            if (err) return next(err);
-//            if (!user) {
-//                if (info.name === "TokenExpiredError") {
-//                    return res.status(401).json({ message: "Your token has expired. Please generate a new one" });
-//                } else {
-//                    return res.status(401).json({ message: info.message });
-//                }
-//            }
-//            app.set("user", user);
-//            req.user = user;
-//            return next();
-//        })(req, res, next);
-//});
+app.all('*', (req, res, next) => {
+    return authCtrl.authenticate((err, user, info) => {
+            if (err) return next(err);
+            if (!user) {
+                if (info.name === "TokenExpiredError") {
+                    return res.status(401).json({ message: "Your token has expired. Please generate a new one" });
+                } else {
+                    return res.status(401).json({ message: info.message });
+                }
+            }
+            app.set("user", user);
+            req.user = user;
+            return next();
+        })(req, res, next);
+});
 app.use('/guest', guestRoute);
 app.use('/user', userRoute);
 app.use('/facility', facilityRoute);
@@ -61,7 +61,7 @@ app.use((req, res, next) => {
 
 //Catch all error
 app.use((err, req, res, next) => {
-    console.log("Error at Index.JS: ", JSON.stringify(err));
+    console.log("Error at Index.JS: ", err);
     if (!(err instanceof Error)) return res.status(500).json({message: 'Server Error'});
     res.status(err.code).json(err.response);
 });

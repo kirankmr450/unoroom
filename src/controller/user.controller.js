@@ -4,6 +4,13 @@ var MetaModel = require('../model/meta.model')
 var Utils = require('../utils/utils');
 var Error = require('../error/error');
 
+// Check if the role has admin privileges
+exports.hasAdminPrivileges = (user) => {
+    return (user && ((user.role === MetaModel.userRoles.Root) ||
+                     (user.role === MetaModel.userRoles.Admin))
+           );
+}
+
 // Only user with admin privileges can perform this operation
 exports.createUser = async (req, res, next) => {
     try {
@@ -122,7 +129,8 @@ exports.listUser = async (req, res, next) => {
             if (!user) throw Error.MissingItem('User does not exist.');
             return res.status(200).send(user);
         } else {
-            var users = await UserModel.find({_id: {$ne: req.user.id}}, {password: 0}).lean().exec();
+            var users = await UserModel.find({role: {$ne: MetaModel.userRoles.Root}}, 
+                                             {password: 0}).lean().exec();
             if (!users) throw Error.ServerError('Something went wrong.');
             return res.status(200).send(users);
         }

@@ -14,7 +14,7 @@ var keyPlacesSchema = new Schema({
             required: false
         }
     },
-    images: [String]
+    imageurl: String
 });
 
 var uiContentSchema = new Schema({
