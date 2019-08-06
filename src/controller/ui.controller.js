@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var UiModel = require('../model/ui.model');
-var FacilityModel = require('../model/facility.model');
+var PropertyModel = require('../model/property.model');
 var _ = require('lodash/array');
 
 exports.getKeyPlaces = async (req, res, next) => {
@@ -94,7 +94,7 @@ exports.getFeaturedProperty = async(req, res, next) => {
             return res.status(200).json([]);
         }
 
-        var facilities = await FacilityModel
+        var facilities = await PropertyModel
             .find({_id: {$in: response.featuredproperty}}, 'facilityid name buildingtype roomtypes status address images amenities nearby')
             .sort({createdOn: 'desc'})
             .lean()
@@ -107,7 +107,7 @@ exports.getFeaturedProperty = async(req, res, next) => {
 
 exports.addFeaturedProperty = async(req, res, next) => {
     try {
-        var facility = await FacilityModel.findById(req.params.propertyid);
+        var facility = await PropertyModel.findById(req.params.propertyid);
         if (!facility) throw Error.MissingItemError('Facility does not exist.');
         
         var uiContentDocument = await UiModel.findOne();

@@ -1,6 +1,6 @@
 var fs = require('fs');
 var resolve = require('path').resolve;
-var FacilityModel = require('../model/facility.model');
+var PropertyModel = require('../model/property.model');
 var MetaModel = require('../model/meta.model');
 var PropCtrl = require('./propertyid.controller');
 var _ = require('lodash/array');
@@ -34,7 +34,7 @@ exports.createFacility = async (req, res, next) => {
         // Fetch propertyid to be assigned to this property
         var propertyid = await PropCtrl.getLatestPropertyId(req.body.address.city);
         // Create property in database
-        var facilityDoc = await new FacilityModel({
+        var facilityDoc = await new PropertyModel({
             facilityid: propertyid,
             name: req.body.name,
             description: req.body.description,
@@ -83,7 +83,7 @@ exports.updateFacility = async (req, res, next) => {
         if (req.body.buildingtype !== undefined && MetaModel.isInvalidBuildingType(req.body.buildingtype))
             throw Error.UserError('Invalid building type');
         
-        var facilityDoc = await FacilityModel.findOne({_id: req.params.facilityid});
+        var facilityDoc = await PropertyModel.findOne({_id: req.params.facilityid});
         if (!facilityDoc) throw Error.MissingItemError('Facility does not exist.');
         
         delete req.body['facilityid'];
@@ -102,7 +102,7 @@ exports.updateFacility = async (req, res, next) => {
 // Add image to a facility
 exports.uploadFacilityImage = async (req, res, next) => {
     try {
-        var facilityDoc = await FacilityModel.findOne({_id: req.params.facilityid});
+        var facilityDoc = await PropertyModel.findOne({_id: req.params.facilityid});
         if (!facilityDoc) throw Error.MissingItemError('Facility does not exist.');
         
         var thumbnail = await ImgUtils.createThumbnail(req.file.path);
@@ -138,7 +138,7 @@ exports.getFacilityImage = async (req, res, next) => {
 // Delete images associated with a facility.
 exports.deleteFacilityImage = async (req, res, next) => {
     try {
-        var facilityDoc = await FacilityModel.findOne({_id: req.params.facilityid});
+        var facilityDoc = await PropertyModel.findOne({_id: req.params.facilityid});
         if (!facilityDoc) throw Error.MissingItemError('Facility does not exist.');
             
         // Remember the image file name to be removed.
@@ -164,11 +164,11 @@ exports.deleteFacilityImage = async (req, res, next) => {
 exports.listFacility = async (req, res, next) => {
     try {
         if (req.params.facilityid) {
-            var facility = await FacilityModel.findOne({_id: req.params.facilityid}).lean();
+            var facility = await PropertyModel.findOne({_id: req.params.facilityid}).lean();
             if (!facility) throw Error.MissingItemError('Facility does not exist.');
             return res.status(200).send(facility);
         } else {
-            var facilities = await FacilityModel.find(getFacilityFilter(req.query))
+            var facilities = await PropertyModel.find(getFacilityFilter(req.query))
                 .sort({ createdOn: 'desc'}).lean();
             res.status(200).send(facilities);
         }
@@ -179,12 +179,12 @@ exports.listFacility = async (req, res, next) => {
 }
 
 exports.fetchAllFacilities = (query) => {
-    return FacilityModel.find(getFacilityFilter(query))
+    return PropertyModel.find(getFacilityFilter(query))
         .lean().exec();
 }
 
 exports.fetchFacilityById = (facilityid) => {
-    return FacilityModel.findOne({_id: facilityid}).lean();
+    return PropertyModel.findOne({_id: facilityid}).lean();
 }
 
 var getFacilityFilter = (query) => {
@@ -243,7 +243,7 @@ var getFacilityFilter = (query) => {
 
 exports.deleteFacility = (req, res, next) => {
     return next(Error.MissingItemError('This API is no longer supported. Please invoke delist facility API to delist a property.'));
-//    FacilityModel.findOneAndRemove({_id: req.params.facilityid})
+//    PropertyModel.findOneAndRemove({_id: req.params.facilityid})
 //        .then(facility => {
 //            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
 //
@@ -256,7 +256,7 @@ exports.deleteFacility = (req, res, next) => {
 // Delist a facility
 exports.delistFacility = async (req, res, next) => {
     try {
-        var facility = await FacilityModel.findByIdAndUpdate(
+        var facility = await PropertyModel.findByIdAndUpdate(
                 req.params.facilityid, 
                 {status: FACILITY_STATUS_INACTIVE},
                 {new: true});
@@ -271,7 +271,7 @@ exports.delistFacility = async (req, res, next) => {
 // Publish a facility
 exports.publishFacility = async (req, res, next) => {
     try {
-        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        var facility = await PropertyModel.findOne({_id: req.params.facilityid});
         if (!facility) throw Error.MissingItemError('Facility does not exist');
         if (!facility.rooms || facility.rooms.length === 0)
             throw Error.ForbiddenError('Facility does not have rooms. It cannot be published.');
@@ -290,7 +290,7 @@ exports.publishFacility = async (req, res, next) => {
 
 exports.checkIfRoomExist = function(facilityId, bookedRooms) {
     return new Promise((resolve, reject) => {
-        FacilityModel.findOne({_id: facilityId})
+        PropertyModel.findOne({_id: facilityId})
         .then(facility => {
             if (!facility) 
                 reject({error: 'Facility does not exist.'});
@@ -321,7 +321,7 @@ exports.createRoom = async (req, res, next) => {
         if (isInvalidRoomAmenities(req.body.amenities)) 
             throw Error.UserError('Invalid amenities in the amenity list');
         
-        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        var facility = await PropertyModel.findOne({_id: req.params.facilityid});
         if (!facility) throw Error.MissingItemError('Facility does not exist.');
         
         // Ensure room type belong to meta.model.roomTypes
@@ -353,7 +353,7 @@ exports.updateRoom = async (req, res, next) => {
             throw Error.UserError('Invalid room type');
         
         // First, look up the facility
-        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        var facility = await PropertyModel.findOne({_id: req.params.facilityid});
         if (!facility) throw Error.MissingItemError('Facility does not exist.');
 
         for (roomIndex in facility.rooms) {
@@ -383,7 +383,7 @@ var isInvalidRoomAmenities = (amenities) => {
  */
 exports.deleteRoom = async (req, res, next) => {
     try {
-        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        var facility = await PropertyModel.findOne({_id: req.params.facilityid});
         if (!facility) throw Error.MissingItemError('Facility does not exist.');
         
         facility.rooms = facility.rooms.filter(room => room._id != req.params.roomid);
@@ -404,7 +404,7 @@ exports.deleteRoom = async (req, res, next) => {
 exports.uploadRoomImage = async (req, res, next) => {
     try {
         // First, look up the facility
-        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        var facility = await PropertyModel.findOne({_id: req.params.facilityid});
         if (!facility) throw Error.MissingItemError('Facility does not exist.');
 
         var thumbnail = await ImgUtils.createThumbnail(req.file.path);
@@ -443,7 +443,7 @@ exports.getRoomImage = async (req, res, next) => {
 // Delete images associated with a room.
 exports.deleteRoomImage = async (req, res, next) => {
     try {
-        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        var facility = await PropertyModel.findOne({_id: req.params.facilityid});
         if (!facility) throw Error.MissingItemError('Facility does not exist.');
         
         for (roomIndex in facility.rooms) {
@@ -484,7 +484,7 @@ exports.addNearBy = async (req, res, next) => {
         if (isInvalidNearByType(req.body.locationtype))
             throw Error.UserError('Invalid location type.');
         
-        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        var facility = await PropertyModel.findOne({_id: req.params.facilityid});
         if (!facility) throw Error.MissingItemError('Facility does not exist.');
         
         facility.nearby.push(req.body);
@@ -510,7 +510,7 @@ exports.updateNearBy = async (req, res, next) => {
             throw Error.UserError('Invalid location type.');
     
         // First, look up the facility
-        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        var facility = await PropertyModel.findOne({_id: req.params.facilityid});
         if (!facility) throw Error.MissingItemError('Facility does not exist.');
 
         for (nearbyIndex in facility.nearby) {
@@ -541,7 +541,7 @@ var isInvalidNearByType = (type) => {
  */
 exports.deleteNearBy = async (req, res, next) => {
     try {
-        var facility = await FacilityModel.findOne({_id: req.params.facilityid});
+        var facility = await PropertyModel.findOne({_id: req.params.facilityid});
         if (!facility) throw Error.MissingItemError('Facility does not exist.');
         
         facility.nearby = facility.nearby.filter(nearby => nearby._id != req.params.nearbyid);
@@ -559,7 +559,7 @@ exports.deleteNearBy = async (req, res, next) => {
  */
 exports.getUniqueCities = async (req, res, next) => {
     try {
-        var records = await FacilityModel.find({}, 'address.city').distinct('address.city');
+        var records = await PropertyModel.find({}, 'address.city').distinct('address.city');
         return res.status(200).json(records.sort());
     } catch (e) {
         next(e);
@@ -571,7 +571,7 @@ exports.getUniqueCities = async (req, res, next) => {
  */
 exports.getUniqueLocalities = async (req, res, next) => {
     try {
-        var records = await FacilityModel.find({'address.city':req.query.city}, 'address.locality')
+        var records = await PropertyModel.find({'address.city':req.query.city}, 'address.locality')
                         .distinct('address.locality');
         return res.status(200).json(records.sort());
     } catch (e) {

@@ -14,7 +14,8 @@ router.post('/login', (req, res, next) => {
     return authCtrl.login(req, res, next);
 });
 
-router.post('/resetpassword/:userid', (req, res, next) => {
+// Reset password requires user authentication
+router.post('/resetpassword/:userid', authCtrl.authenticateMW, (req, res, next) => {
     return authCtrl.resetPassword(req, res, next);
 });
 

@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var moment = require('moment-timezone');
 var ReservationModel = require('../model/reservation.model')
-var FacilityCtrl = require('../controller/facility.controller')
+var PropertyCtrl = require('../controller/property.controller')
 var GuestCtrl = require('../controller/guest.controller')
 
 const RESERVATION_STATUS_PENDING = 'pending';
@@ -32,7 +32,7 @@ exports.create = function(req, res) {
     
     GuestCtrl.checkIfGuestExist(req.body.guestid)
         .catch(err => { throw err; })
-        .then(() => FacilityCtrl.checkIfRoomExist(req.body.facilityid, req.body.rooms))
+        .then(() => PropertyCtrl.checkIfRoomExist(req.body.facilityid, req.body.rooms))
         .catch(err => { throw err; })
         .then(isRoomsExist => {
             

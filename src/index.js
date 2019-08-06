@@ -10,7 +10,7 @@ let authCtrl = require('./controller/auth.controller');
 let authRoute = require('./routes/auth');
 let userRoute = require('./routes/user');
 let guestRoute = require('./routes/guest');
-let facilityRoute = require('./routes/facility');
+let propertyRoute = require('./routes/property');
 let occupiedRoomRoute = require('./routes/occupiedroom');
 let metaRoute = require('./routes/meta');
 let uiRoute = require('./routes/ui');
@@ -27,6 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(authCtrl.initialize());
 app.use('/auth', authRoute);
+/*** AUTHENTICATION is now handled at routes ***/
 // Authentication API (/auth) does not require user authentication
 // Hence they are placed above authentication check.
 //app.all('*', (req, res, next) => {
@@ -46,7 +47,7 @@ app.use('/auth', authRoute);
 //});
 app.use('/guest', guestRoute);
 app.use('/user', userRoute);
-app.use('/facility', facilityRoute);
+app.use('/facility', propertyRoute);
 app.use('/occupiedroom', occupiedRoomRoute);
 app.use('/meta', metaRoute);
 app.use('/ui', uiRoute);

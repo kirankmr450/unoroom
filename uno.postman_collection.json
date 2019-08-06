@@ -1,4 +1,3 @@
-//Postman collection
 {
 	"info": {
 		"_postman_id": "c06188a9-623e-4273-b5d2-ed5e83dceae9",
@@ -263,6 +262,11 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{uno.token}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -296,7 +300,7 @@
 							},
 							{
 								"key": "Authorization",
-								"value": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjM2NDE4NDYsInVzZXJpZCI6IjVkMzFiYjcxNTUwNTBhMzA3OGVkZTU3NCJ9.GLmbGU3mQY-unSLoOZkwHgK_mhLxTF1vjG41e0kN414",
+								"value": "{{uno.token}}",
 								"type": "text"
 							}
 						],
@@ -384,6 +388,11 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{uno.token}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -391,13 +400,13 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DEV_SERVER}}/facility/5cda8a52734a719378fc6b3d",
+							"raw": "{{DEV_SERVER}}/facility/5d49b05b9564402478e49fb0",
 							"host": [
 								"{{DEV_SERVER}}"
 							],
 							"path": [
 								"facility",
-								"5cda8a52734a719378fc6b3d"
+								"5d49b05b9564402478e49fb0"
 							]
 						}
 					},
@@ -627,6 +636,11 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{uno.token}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -650,14 +664,14 @@
 							]
 						},
 						"url": {
-							"raw": "{{DEV_SERVER}}/facility/image/5d0b5d682579c9410090f0ed",
+							"raw": "{{DEV_SERVER}}/facility/image/5d43b76c495ce6074cb5811b",
 							"host": [
 								"{{DEV_SERVER}}"
 							],
 							"path": [
 								"facility",
 								"image",
-								"5d0b5d682579c9410090f0ed"
+								"5d43b76c495ce6074cb5811b"
 							]
 						}
 					},
@@ -970,13 +984,19 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DEV_SERVER}}/meta/roomtypes",
+							"raw": "{{DEV_SERVER}}/meta/roomtypes?buildingtype=ServiceApartment",
 							"host": [
 								"{{DEV_SERVER}}"
 							],
 							"path": [
 								"meta",
 								"roomtypes"
+							],
+							"query": [
+								{
+									"key": "buildingtype",
+									"value": "ServiceApartment"
+								}
 							]
 						}
 					},
@@ -1810,6 +1830,68 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Search Hotels",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/search/hotels",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"search",
+								"hotels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Service Apartments",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{DEV_SERVER}}/search/apartments",
+							"host": [
+								"{{DEV_SERVER}}"
+							],
+							"path": [
+								"search",
+								"apartments"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1825,11 +1907,16 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{uno.token}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"firstname\": \"Neeraj\",\n    \"lastname\": \"Nayan\",\n    \"emailid\": \"ab1c@gmail.com\",\n    \"password\": \"pass\",\n    \"role\": \"Operator\"\n}"
+							"raw": "{\n\t\"firstname\": \"Neeraj1\",\n    \"lastname\": \"Nayan1\",\n    \"emailid\": \"admin111\",\n    \"password\": \"secure@123\",\n    \"role\": \"Operator\"\n}"
 						},
 						"url": {
 							"raw": "{{DEV_SERVER}}/user",
@@ -1892,7 +1979,7 @@
 							},
 							{
 								"key": "Authorization",
-								"value": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjM2MTQyODQsInVzZXJpZCI6IjVkMzI1OGNmNWRlM2E5MjNhOGVhMmUwYSJ9.PfiBAseZmqXQQ6zB-Bs0MplbFYmx7A8LYBtwusyj284",
+								"value": "{{uno.token}}",
 								"type": "text"
 							}
 						],
@@ -2051,6 +2138,19 @@
 				},
 				{
 					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e367f716-6fd8-4ad6-823e-72b82b6e5ae4",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"uno.token\", data.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -2089,7 +2189,7 @@
 							},
 							{
 								"key": "Authorization",
-								"value": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjM1ODEzMzYsInVzZXJpZCI6IjVkMzI1OGNmNWRlM2E5MjNhOGVhMmUwYSJ9.GP25OVDqT0K2E5SrOKSO2DNk2Uslh3qgFFI9deQ1gxk",
+								"value": "{{uno.token}}",
 								"type": "text"
 							}
 						],
@@ -2098,14 +2198,14 @@
 							"raw": "{\n    \"password\": \"Hello-World\"\n}"
 						},
 						"url": {
-							"raw": "{{DEV_SERVER}}/auth/resetpassword/5d3258cf5de3a923a8ea2e0a",
+							"raw": "{{DEV_SERVER}}/auth/resetpassword/5d483177f6d542126cbb60a1",
 							"host": [
 								"{{DEV_SERVER}}"
 							],
 							"path": [
 								"auth",
 								"resetpassword",
-								"5d3258cf5de3a923a8ea2e0a"
+								"5d483177f6d542126cbb60a1"
 							]
 						}
 					},

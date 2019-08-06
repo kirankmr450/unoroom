@@ -1,10 +1,10 @@
 var RsvController = require('./reservation.controller');
-var FacilityController = require('./facility.controller');
+var PropertyController = require('./property.controller');
 
 // Search all hotels
 exports.searchAllHotels = async (req, res, next) => {
     try {
-        var hotels = await FacilityController.fetchAllFacilities({
+        var hotels = await PropertyController.fetchAllFacilities({
             buildingtype: 'Hotel',
             city: req.query.city,
             amenities: req.query.amenities,
@@ -20,7 +20,7 @@ exports.searchAllHotels = async (req, res, next) => {
 // Search all service apartments
 exports.searchAllApartments = async (req, res, next) => {
     try {
-        var serviceApartments = await FacilityController.fetchAllFacilities({
+        var serviceApartments = await PropertyController.fetchAllFacilities({
             buildingtype: 'ServiceApartment',
             city: req.query.city,
             amenities: req.query.amenities,
@@ -42,7 +42,7 @@ exports.searchAllApartments = async (req, res, next) => {
 //   checkoutdate=YYYY-MM-DD (Check-out date)
 exports.searchAllFacilities = function(req, res) {
     // Step-1: First fetch all facilities matching the filter
-    FacilityController.fetchAllFacilities({
+    PropertyController.fetchAllFacilities({
         city: req.query.city,
         amenities: req.query.amenities,
         roomtype: req.query.roomtype,
@@ -106,7 +106,7 @@ var filterFacilitiesWithAvailabilities = (req, facilities) => {
 //   checkoutdate=YYYY-MM-DD (Check-out date)
 exports.searchFacility = function(req, res) {
     // Step-1: Fetch facility details by facility id
-    FacilityController.fetchFacilityById(req.params.facilityid)
+    PropertyController.fetchFacilityById(req.params.facilityid)
         .then(facility => {
             if (null == facility) res.status(404).send({error: 'Facility not found.'});
             // Check availability in the facility

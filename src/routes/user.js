@@ -1,8 +1,12 @@
 let express = require('express');
 let userCtrl = require('../controller/user.controller');
+let authCtrl = require('../controller/auth.controller');
 let Error = require('../error/error');
 
 let router = express.Router();
+
+// All user API requires authentication
+router.all('*', authCtrl.authenticateMW);
 
 // User list can be fetched only by admin.
 router.get('/', (req, res, next) => {
