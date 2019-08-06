@@ -104,20 +104,21 @@ exports.uploadFacilityImage = async (req, res, next) => {
     try {
         var facilityDoc = await FacilityModel.findOne({_id: req.params.facilityid});
         if (!facilityDoc) throw Error.MissingItemError('Facility does not exist.');
-
+        
+        var thumbnail = await ImgUtils.createThumbnail(req.file.path);
+        
         var img = {
             category: req.body.category,
             description: req.body.description,
             mimetype: req.file.mimetype,
-            url: ImgUtils.getFacilityImageFileUrl(req.params.facilityid, req.file.filename)
+            url: ImgUtils.getFacilityImageFileUrl(req.params.facilityid, req.file.filename),
+            thumbnail
         };
-        console.log(img);
 
         facilityDoc.images.push(img);
         facilityDoc = await facilityDoc.save();
         return res.status(200).send(facilityDoc);
     } catch(e) {
-        console.log(e);
         // Handle scenario when certain parameter type is incorrect.
         if (e.name == 'CastError') return next(Error.UserError('Invalid argument'));
         return next(e);
@@ -406,11 +407,13 @@ exports.uploadRoomImage = async (req, res, next) => {
         var facility = await FacilityModel.findOne({_id: req.params.facilityid});
         if (!facility) throw Error.MissingItemError('Facility does not exist.');
 
+        var thumbnail = await ImgUtils.createThumbnail(req.file.path);
         var img = {
             category: req.body.category,
             description: req.body.description,
             mimetype: req.file.mimetype,
-            url: ImgUtils.getRoomImageFileUrl(req.params.facilityid, req.params.roomid, req.file.filename)
+            url: ImgUtils.getRoomImageFileUrl(req.params.facilityid, req.params.roomid, req.file.filename),
+            thumbnail
         };
         for (roomIndex in facility.rooms) {
             if (facility.rooms[roomIndex]._id == req.params.roomid) {

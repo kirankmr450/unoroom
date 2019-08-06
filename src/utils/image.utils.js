@@ -1,4 +1,5 @@
 var Multer = require('multer');
+var sharp = require('sharp');
 var mkdirp = require('mkdirp');
 
 const BASE_IMG_FOLDER = './public/images/';
@@ -12,7 +13,6 @@ var storage = Multer.diskStorage({
     },
     
     filename: (req, file, cb) => {
-        console.log(file);
         var filetype = '';
         if(file.mimetype === 'image/gif') {
             filetype = 'gif';
@@ -53,7 +53,6 @@ var getRoomFolder = (facilityid, roomid) => {
 var getFilename = () => {
     var hrTime = process.hrtime();
     var filename = hrTime[0] * 1000000000 + hrTime[1];
-    console.log(filename);
     return filename;
 }
 
@@ -81,6 +80,16 @@ exports.getRoomFilePath = (facilityId, roomId) => {
 exports.getRoomImageFilePath = (imgurl) => {
     var files = imgurl.slice(imgurl.lastIndexOf('/') + 1).split('_');
     return BASE_IMG_FOLDER + FACILITY_FOLDER_NAME + files[0] + '/' + files[1] + '/' + files[2];
+}
+
+// Create image thumbnail from image file
+exports.createThumbnail = (srcFilepath) => {
+    return new Promise((res, rej) => {
+        sharp(srcFilepath)
+            .resize({width: 200, height: 200, fit: 'inside', position: 'center'})
+            .toBuffer()
+            .then(res).catch(rej);
+    });
 }
 
 exports.Upload = Multer({storage: storage});

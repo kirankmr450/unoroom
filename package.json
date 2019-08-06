@@ -32,7 +32,8 @@
     "multer": "^1.4.1",
     "nodemailer": "^6.2.1",
     "nodemon": "^1.19.0",
-    "rimraf": "^2.6.3"
+    "rimraf": "^2.6.3",
+    "sharp": "^0.23.0"
   },
   "devDependencies": {
     "jwt-simple": "^0.5.6",
