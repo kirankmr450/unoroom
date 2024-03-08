@@ -6,7 +6,7 @@
   "scripts": {
     "//": "npm run start-watch",
     "start": "node src/index.js",
-    "start-watch": "nodemon src/index.js",
+    "start-watch": "nodemon --inspect src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,6 +24,6 @@
     "express": "^4.16.4",
     "moment": "^2.24.0",
     "mongoose": "^5.5.5",
-    "nodemon": "^1.19.0"
+    "nodemon": "^3.1.0"
   }
 }

@@ -16,6 +16,7 @@ var imgItemSchema = new Schema({
 
 var imageSchema = new Schema({
     category: String,
+    description: String,
     urls: [imgItemSchema]
 });
 
@@ -25,6 +26,7 @@ var roomSchema = new Schema({
     furnishing: String,
     size: String,
     view: String,
+    count: Number,
     amenities: [String],
     price: Number,
     images: {
@@ -77,15 +79,16 @@ var facilitySchema = new Schema({
         type: String,
         required: false
     },
+    buildingtype: {
+        type: String,
+        required: false
+    },
     amenities: {
         type: [String],
         required: false
     },
     nearby: [nearybySchema],
-    images: {
-        thumbnails: [String],
-        img: [imageSchema],
-    },
+    images: [imageSchema],
     rules: [String],
     rooms: [roomSchema],
     roomtypes: [String],
@@ -99,6 +102,10 @@ var facilitySchema = new Schema({
             required: false
         },
         city: {
+            type: String,
+            required: false
+        },
+        locality: {
             type: String,
             required: false
         },

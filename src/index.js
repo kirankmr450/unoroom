@@ -8,7 +8,10 @@ let facilityRoute = require('./routes/facility');
 let occupiedRoomRoute = require('./routes/occupiedroom');
 let metaRoute = require('./routes/meta');
 
-mongoose.connect('mongodb://localhost:27017/unorooms', {useNewUrlParser: true});
+mongoose
+    .connect('mongodb+srv://eIPc9g1Ocu22xHAZ:OtsJMOhh73A8fB3k@unoroomdb.fiq2frx.mongodb.net/?retryWrites=true&w=majority&appName=unoroomdb}', {useNewUrlParser:true,useUnifiedTopology: true })
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.log(err));
 
 var app = express();
 app.use(bodyParser.json());
@@ -21,7 +24,7 @@ app.use('/meta', metaRoute);
 
 // Catch 404 error
 app.use((req, res, next) => {
-    res.status(404).send('Resource not found');
+    res.status(404).send('Resource not founds');
 });
 
 //Handle for error 500

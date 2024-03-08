@@ -14,6 +14,7 @@ exports.createFacility = function(req, res) {
         phonenumber1: req.body.phonenumber1,
         phonenumber2: req.body.phonenumber2,
         emailid: req.body.emailid,
+        buildingtype: req.body.buildingtype,
         amenities: req.body.amenities,
         rules: req.body.rules,
         rooms: req.body.rooms,
@@ -76,7 +77,7 @@ exports.listFacility = function(req, res) {
             });
     } else {
         FacilityModel.find().sort({ createdOn: 'desc'})
-            .limit(10)
+            .limit(20)
             .lean()
             .exec()
             .then(facilities => {
@@ -98,7 +99,7 @@ exports.deleteFacility = function(req, res) {
             });
 }
 
-exports.createRoom = function(req, res) {
+exports.createLandmark = function(req, res) {
     if (Object.keys(req.body).length === 0) {
         return res.status(400)
             .json({"error": "Request body is missing"});
@@ -108,7 +109,7 @@ exports.createRoom = function(req, res) {
         .then(facility => {
             if (!facility) return res.status(404).json({"error": "Facility does not exist."});
         
-            facility.rooms.push(req.body);
+            facility.nearby.push(req.body);
             return facility.save();
         }).then(facility => {
             return res.status(201).send(facility);
@@ -116,6 +117,74 @@ exports.createRoom = function(req, res) {
             console.log(err);
             // Handle scenario when certain parameter type is incorrect.
             if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send(err);
+        });
+}
+
+exports.updateLandmark = function(req, res) {
+    if (Object.keys(req.body).length === 0) {
+        return res.status(400)
+            .json({"error": "Request body is missing"});
+    }
+    // First, look up the facility
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
+        
+            for (landmarkIndex in facility.nearby) {
+                if (facility.nearby[landmarkIndex]._id == req.params.landmarkid) {
+                    Object.assign(facility.nearby[landmarkIndex], req.body);
+                    return facility.save();        
+                }
+            }
+            
+            return res.status(404).json({"error": "Room does not exist."});
+        }).then(facility => {
+            return res.status(200).send(facility);
+        }).catch(err => {
+            console.log(err);
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send(err);
+        });
+}
+
+exports.deleteLandmark = function(req, res) {
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
+        
+            facility.nearby = facility.nearby.filter(nearby => nearby._id != req.params.landmarkid);
+            return facility.save();
+        }).then(facility => {
+            return res.status(200).send(facility);
+        }).catch(err => {
+            console.log(err);
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send(err);
+        });
+}
+
+exports.createRoom = function(req, res) {
+    if (Object.keys(req.body).length === 0) {
+        return res.status(400)
+            .json({"error": "Request body is missing"});
+    }
+    
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            console.log(facility)
+            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
+        
+            facility.rooms.push(req.body);
+            return facility.save();
+        }).then(facility => {
+            return res.status(201).send(facility);
+        }).catch(err => {
+            console.log(err);
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argumentsss'});
             return res.status(500).send(err);
         });
 }
@@ -161,6 +230,28 @@ exports.deleteRoom = function(req, res) {
             console.log(err);
             // Handle scenario when certain parameter type is incorrect.
             if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argument'});
+            return res.status(500).send(err);
+        });
+}
+
+exports.createPropertyImages = function(req, res) {
+    if (Object.keys(req.body).length === 0) {
+        return res.status(400)
+            .json({"error": "Request body is missing"});
+    }
+    
+    FacilityModel.findOne({_id: req.params.facilityid})
+        .then(facility => {
+            if (!facility) return res.status(404).json({"error": "Facility does not exist."});
+        
+            facility.images.push(req.body);
+            return facility.save();
+        }).then(facility => {
+            return res.status(201).send(facility);
+        }).catch(err => {
+            console.log(err);
+            // Handle scenario when certain parameter type is incorrect.
+            if (err.name == 'CastError') return res.status(400).send({'error': 'Invalid argumentsss'});
             return res.status(500).send(err);
         });
 }

@@ -26,17 +26,39 @@ router.delete('/:facilityid', (req, res) => {
 });
 
 /**
+ * Building Image Upload
+ */
+router.post('/image/:facilityid', (req, res) => {
+    return facilityCtrl.createPropertyImages(req, res);
+});
+
+/**
+ * Landmark
+ */
+router.post('/nearby/:facilityid', (req, res) => {
+    return facilityCtrl.createLandmark(req, res);
+});
+
+router.delete('/nearby/:facilityid/:landmarkid', (req, res) => {
+    return facilityCtrl.deleteLandmark(req, res);
+});
+
+router.put('/nearby/:facilityid/:landmarkid', (req, res) => {
+    return facilityCtrl.updateLandmark(req, res);
+});
+
+/**
  * Room
  */
-router.post('/:facilityid', (req, res) => {
+router.post('/room/:facilityid', (req, res) => {
     return facilityCtrl.createRoom(req, res);
 });
 
-router.delete('/:facilityid/:roomid', (req, res) => {
+router.delete('/room/:facilityid/:roomid', (req, res) => {
     return facilityCtrl.deleteRoom(req, res);
 });
 
-router.put('/:facilityid/:roomid', (req, res) => {
+router.put('/room/:facilityid/:roomid', (req, res) => {
     return facilityCtrl.updateRoom(req, res);
 });
 
