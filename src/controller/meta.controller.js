@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 exports.getCities = function(req, res) {
     return res.status(200).json(cities);
 }
@@ -16,18 +17,39 @@ exports.getStates = function(req, res) {
 
 exports.getRoomTypes = function(req, res) {
     return res.status(200).json(roomTypes);
+=======
+var MetaModel = require('../model/meta.model');
+var Error = require('../error/error');
+
+exports.getRoomTypes = function(req, res, next) {
+    var buildingType = req.query.buildingtype;
+    if (MetaModel.isInvalidBuildingType(buildingType)) {
+        next(Error.UserError('Invalid building type'));
+        return;
+    }
+    return res.status(200).json(MetaModel.roomTypes[buildingType]);
+}
+
+exports.getBuildingTypes = function(req, res) {
+    return res.status(200).json(MetaModel.buildingTypes);
+>>>>>>> 40950851a56f122145c7ee943a42d0237cb0e830
 }
 
 exports.getBuildingAmenities = function(req, res) {
-    return res.status(200).json(buildingAmenities);
+    return res.status(200).json(MetaModel.allAmenities());
 }
 
 exports.getRoomAmenities = function(req, res) {
-    return res.status(200).json(roomAmenities);
+//    return res.status(200).json(MetaModel.roomAmenities);
+    return res.status(404).json('This API is no longer supported. Use building amenities API.');
+}
+
+exports.getUserRoles = (req, res) => {
+    return res.status(200).json(MetaModel.userRoles);
 }
 
 exports.getLocationTypes = function(req, res) {
-    return res.status(200).json(locationType);
+    return res.status(200).json(MetaModel.locationType);
 }
 var cities = [{
 	"city": "Bangalore",
@@ -49,6 +71,7 @@ var cities = [{
 	"value": "kolkata"
 }]
 
+<<<<<<< HEAD
 var localities = [{
 	"locality": "Near to Airport",
 	"value": "nearbyairport"
@@ -82,7 +105,24 @@ var buildingtypes = [{
 var roomTypes = ["SingleBedRoom", "DoubleBedRoom", "OneBHKApartment", "TwoBHKApartment", "ThreeBHKApartment"];
 
 var buildingAmenities = ["SwimmingPools", "Internet", "CarPark", "AirportTransfer", "Gym", "FrontDesk", "Spa", "Sauna", "Restaurant", "SmokingArea", "PetsAllowed", "Nightclub", "DisableFriendly", "BusinessFriendly"];
+=======
+exports.getCities = function(req, res) {
+    return res.status(200).json(Object.keys(MetaModel.cities).sort());
+}
 
-var roomAmenities = ["AirConditioning", "NonSmoking", "Smoking", "Bathtub", "Kitchen", "PrivatePool", "TV", "Balcony", "Terrace", "CoffeeMaker", "Refrigerator", "WashingMachine", "Heating", "PetsAllowed", "SemiFurnished", "FullyFurnished"];
+exports.getLocalities = function(req, res) {
+    var localities = [];
+    if (MetaModel.cities.hasOwnProperty(req.query.city)) {
+        localities = MetaModel.cities[req.query.city];
+    }
+    return res.status(200).json(localities.sort());
+}
+>>>>>>> 40950851a56f122145c7ee943a42d0237cb0e830
 
-var locationType = ["BusStand", "RailwayStation", "MetroStation", "Airport", "Beach", "ShoppingMall", "Downtown", "Pubs", "Park", "Temple", "Museum", "University", "Stadium", "Hospital"];
+exports.getStates = (req, res) => {
+    return res.status(200).json(MetaModel.indianStates.map((s) => s.name));
+}
+
+exports.getCountries = function(req, res) {
+    return res.status(200).json(MetaModel.countries.map((c) => c.name));
+}

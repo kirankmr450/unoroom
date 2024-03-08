@@ -9,30 +9,29 @@ var requiredStringValidator = [
     '{PATH} cannot be empty'
 ];
 
-var imgItemSchema = new Schema({
-    url: String,
-    name: String
-});
-
-var imageSchema = new Schema({
+var imgSchema = new Schema({
     category: String,
     description: String,
+<<<<<<< HEAD:src/model/facility.model.js
     urls: [imgItemSchema]
+=======
+    mimetype: String,
+    url: String,
+    thumbnail: Buffer
+>>>>>>> 40950851a56f122145c7ee943a42d0237cb0e830:src/model/property.model.js
 });
 
 var roomSchema = new Schema({
     name: [String],
-    type: [String],
+    type: String,
     furnishing: String,
     size: String,
     view: String,
     count: Number,
     amenities: [String],
     price: Number,
-    images: {
-        thumbnails: [String],
-        img: [imageSchema]
-    }
+    count: Number,
+    images: [imgSchema]
 });
 
 var nearybySchema = new Schema({
@@ -61,10 +60,18 @@ var nearybySchema = new Schema({
 });
 
 var facilitySchema = new Schema({
+    facilityid: {
+        type: String,
+        required: false,
+    },
     name: {
         type: String, 
         required: true,
         validate: requiredStringValidator
+    },
+    description: {
+        type: String,
+        required: false
     },
     phonenumber1: {
         type: String,
@@ -87,11 +94,21 @@ var facilitySchema = new Schema({
         type: [String],
         required: false
     },
+<<<<<<< HEAD:src/model/facility.model.js
     nearby: [nearybySchema],
     images: [imageSchema],
+=======
+    buildingtype: {
+        type: String,
+        required: true,
+    },
+    nearby: [nearybySchema],
+    images: [imgSchema],
+>>>>>>> 40950851a56f122145c7ee943a42d0237cb0e830:src/model/property.model.js
     rules: [String],
     rooms: [roomSchema],
     roomtypes: [String],
+    status: String,
     address: {
         line1: {
             type: String,
@@ -99,6 +116,10 @@ var facilitySchema = new Schema({
         },
         line2: {
             type: String, 
+            required: false
+        },
+        locality: {
+            type: String,
             required: false
         },
         city: {
@@ -112,6 +133,9 @@ var facilitySchema = new Schema({
         pin: {
             type: String,
             required: false
+        },
+        state: {
+            type: String
         },
         country: {
             type: String,
@@ -131,4 +155,5 @@ var facilitySchema = new Schema({
     }
 });
 
+facilitySchema.index({ name: 'text' });
 module.exports = mongoose.model('Facility', facilitySchema);

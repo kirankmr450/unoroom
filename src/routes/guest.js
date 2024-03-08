@@ -1,7 +1,11 @@
 let express = require('express');
 let guestCtrl = require('../controller/guest.controller');
+let authCtrl = require('../controller/auth.controller');
 
 let router = express.Router();
+
+// All guest API requires authentication
+router.all('*', authCtrl.authenticateMW);
 
 router.get('/', (req, res) => {
     return guestCtrl.list(req, res);
